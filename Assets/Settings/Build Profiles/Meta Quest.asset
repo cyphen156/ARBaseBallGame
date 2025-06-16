@@ -21,25 +21,25 @@ MonoBehaviour:
   m_OverrideGlobalSceneList: 1
   m_Scenes:
   - m_enabled: 1
-    m_path: Assets/Scenes/MetaMenu.unity
+    m_path: Assets/ARSample/Scenes/MetaMenu.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/SimpleAR/SimpleAR.unity
+    m_path: Assets/ARSample/Scenes/SimpleAR/SimpleAR.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/Anchors/Anchors.unity
+    m_path: Assets/ARSample/Scenes/Anchors/Anchors.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/Anchors/TestAnchors.unity
+    m_path: Assets/ARSample/Scenes/Anchors/TestAnchors.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/Meta/MetaSceneCapture.unity
+    m_path: Assets/ARSample/Scenes/Meta/MetaSceneCapture.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/Meta/MetaDisplayRefreshRate.unity
+    m_path: Assets/ARSample/Scenes/Meta/MetaDisplayRefreshRate.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/PlaneDetection/PlaneDetectionMode/PlaneDetectionMode.unity
+    m_path: Assets/ARSample/Scenes/PlaneDetection/PlaneDetectionMode/PlaneDetectionMode.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/BoundingBoxDetection/BoundingBoxes.unity
+    m_path: Assets/ARSample/Scenes/BoundingBoxDetection/BoundingBoxes.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/Meshing/NormalMeshes/NormalMeshes.unity
+    m_path: Assets/ARSample/Scenes/Meshing/NormalMeshes/NormalMeshes.unity
   - m_enabled: 1
-    m_path: Assets/Scenes/Meta/MetaBoundaryVisibility.unity
+    m_path: Assets/ARSample/Scenes/Meta/MetaBoundaryVisibility.unity
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
     m_Settings:
