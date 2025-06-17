@@ -8,17 +8,17 @@ using UnityEngine.UI;
 /// 피치 유형 토글 버튼을 클릭하면 해당 버튼이 활성화되고, 다른 버튼은 비활성화됩니다.
 /// 외부로 이벤트를 발생시킵니다.
 /// </summary>
+
+public enum PitchType
+{
+    Fastball,
+    Curve,
+
+    None
+}
+
 public class PitchTypeSelector : MonoBehaviour
 {
-    public enum PitchType 
-    { 
-        Fastball, 
-        Curve,
-
-        None
-    }
-
-
     private Dictionary<Toggle, PitchType> toggleToPitchType;
     public Toggle[] toggles;
 
