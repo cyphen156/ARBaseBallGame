@@ -51,7 +51,13 @@ public class GameManager : MonoBehaviour
         {
             case GameState.None:
                 // 초기 상태, 게임이 시작되지 않았습니다.
+                // 게임 로직이 비정상적인 상태일 때 처리할 로직을 여기에 작성합니다.
                 return;
+            case GameState.Initializing:
+                // 게임이 초기화 중입니다.
+                // AR을 통해 플레이어와 AI의 위치를 설정하고, 
+                // 유저는 게임 모드를 선택해야 합니다.
+                break;
             case GameState.Ready:
                 // 플레이어가 게임을 시작할 준비가 되었습니다.
                 // 예: UI를 통해 플레이어가 게임을 시작할 수 있도록 안내합니다.
@@ -65,6 +71,7 @@ public class GameManager : MonoBehaviour
                 // 예: 승패를 결정하고, 결과를 표시합니다.
                 break;
             default:
+                // Critical error handling or logging
                 break;
         }
     }
@@ -94,6 +101,10 @@ public class GameManager : MonoBehaviour
         Debug.Log("게임 플레이 준비 완료. 현재 상태: " + currentGameState);
     }
 
+    /// <summary>
+    /// 게임 상태를 변경합니다.
+    /// </summary>
+    /// <param name="newGameState"></param>
     private void ChangeGameState(GameState newGameState)
     {
         if (currentGameState == newGameState)
@@ -104,6 +115,10 @@ public class GameManager : MonoBehaviour
         Debug.Log("게임 상태가 변경되었습니다: " + currentGameState);
     }
 
+    /// <summary>
+    /// 플레이 모드를 변경합니다.
+    /// </summary>
+    /// <param name="newMode"></param>
     private void ChangePlayMode(PlayMode newMode)
     {
         if (newMode == currentPlayMode)
