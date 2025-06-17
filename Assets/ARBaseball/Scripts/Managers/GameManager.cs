@@ -6,9 +6,15 @@ using UnityEngine;
 /// 사용자의 입력에 따라 게임의 진행 상태를 업데이트하고, 게임 오브젝트를 관리합니다.
 /// AI와의 상호작용을 처리하며, 게임의 시작과 종료를 관리합니다.
 /// </summary>
-
 public class GameManager : MonoBehaviour
 {
+    /// <summary>
+    /// todos : 
+    /// 1. 플레이어 입력에 따라 게임 상태를 업데이트합니다.
+    /// 2. AI와의 상호작용을 처리합니다.
+    /// 3. 게임 오브젝트를 관리합니다.
+    /// 4. 게임의 시작과 종료를 관리합니다.
+    /// </summary>
     [Header("GameState")]
     public static GameManager Instance { get; private set; }
     [SerializeField] private GameState currentGameState;  // 현재 게임 상태
