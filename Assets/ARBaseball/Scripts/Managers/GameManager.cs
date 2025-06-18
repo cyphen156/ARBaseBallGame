@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -20,6 +21,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameState currentGameState;  // 현재 게임 상태
 
     [SerializeField] private PlayMode currentPlayMode;  // 플레이 모드 선택 여부
+
+    public event Action<GameState> OnGameStateChanged;
+    public event Action<PlayMode> OnPlayModeChanged;
+
 
     //[Header("PlayerControll")]
     //public PlayerController PlayerController { get; private set; }
@@ -45,9 +50,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator Start()
+    private void Start()
     {
-        yield return StartCoroutine(InitializeGame());
+        UIManager.Instance.InitializeUI();
+        InitializeGame();
     }
 
     private void Update()
@@ -87,7 +93,7 @@ public class GameManager : MonoBehaviour
     /// 위치 설정이 완료되면 플레이어는 플레이 모드를 선택할 수 있습니다.
     /// 플레이 모드가 선택되면 게임 상태를 Ready로 변경합니다.
     /// </summary>
-    private IEnumerator InitializeGame()
+    private void InitializeGame()
     {
         // 게임 초기화 로직을 여기에 작성합니다.
         // 예: 플레이어와 AI 컨트롤러 초기화, UI 설정 등
@@ -101,10 +107,10 @@ public class GameManager : MonoBehaviour
 
         // 로직 2
         // UI를 통해 플레이 모드를 선택하도록 안내합니다.
-        yield return new WaitUntil(() => currentPlayMode != PlayMode.None);
 
         ChangeGameState(GameState.Ready);
         Debug.Log("게임 플레이 준비 완료. 현재 상태: " + currentGameState);
+        OnGameStateChanged?.Invoke(currentGameState);
     }
 
     /// <summary>
@@ -134,5 +140,6 @@ public class GameManager : MonoBehaviour
 
         currentPlayMode = newMode;
         Debug.Log("플레이 모드가 변경되었습니다: " + currentPlayMode);
+        OnPlayModeChanged?.Invoke(currentPlayMode);
     }
 }
