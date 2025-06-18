@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// 게임의 전반적인 상태를 관리합니다.
@@ -9,6 +10,9 @@ using UnityEngine;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    // 테스트용
+    public GameObject ballPrefab;  // 공 프리팹
+
     /// <summary>
     /// todos : 
     /// 1. 플레이어 입력에 따라 게임 상태를 업데이트합니다.
@@ -60,6 +64,11 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            GameObject go = Instantiate(ballPrefab, Camera.main.transform.position, Quaternion.identity);
+            go.GetComponent<Ball>().Shoot(Camera.main.transform.position, Camera.main.transform.forward, 10f, PitchType.Fastball);
+        }
         // 게임 상태에 따라 업데이트 로직을 처리합니다.
         switch (currentGameState)
         {
