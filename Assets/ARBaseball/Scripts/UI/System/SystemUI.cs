@@ -13,10 +13,12 @@ public class SystemUI : MonoBehaviour
     public GameObject turnResultPrefab;
 
     public TextMeshProUGUI textTimer;
+    public TextMeshProUGUI textTurnResult;
     
     [SerializeField] private Transform ballContainer;
     [SerializeField] private Transform strikeContainer;
     [SerializeField] private Transform outContainer;
+
     private List<Transform> _ball = new List<Transform>();
     private List<Transform> _strike = new List<Transform>();
     private List<Transform> _out = new List<Transform>();
@@ -93,5 +95,33 @@ public class SystemUI : MonoBehaviour
     public void UpdateTextTimer(int time)
     {
         textTimer.text = time.ToString();
+    }
+
+    public void PlayTurnResultTextAnimation(string message, float duration)
+    {
+        StartCoroutine(C_PlayTurnResultTextAnimation(message, duration));
+    }
+
+    /// <summary>
+    /// 텍스트가 애니메이션을 통해 표시됩니다.
+    /// 1. 한글자씩 늘어납니다.
+    /// 2. 지정된 시간 동안 표시됩니다.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    public IEnumerator C_PlayTurnResultTextAnimation(string message, float duration)
+    {
+        textTurnResult.text = "";
+        char[] chars = message.ToCharArray();
+        
+        for (int i = 0; i < chars.Length; ++i)
+        {
+            textTurnResult.text += chars[i];
+            yield return new WaitForSeconds(duration);
+        }
+
+        yield return new WaitForSeconds(1f); 
+        textTurnResult.text = "";
     }
 }

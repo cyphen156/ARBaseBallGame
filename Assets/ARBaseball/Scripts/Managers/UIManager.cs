@@ -43,10 +43,8 @@ public class UIManager : MonoBehaviour
     {
         // 게임 매니저의 이벤트 구독을 해제합니다.
         GameManager.Instance.OnPlayModeChanged -= ApplyPlayModeUI;
-    }
-    private void Start()
-    {
-        // 게임 시작 시 UI를 초기화합니다.
+        GameManager.Instance.OnRestTimeChanged -= UpdateSystemTimerUI;
+
     }
 
     /// <summary>
@@ -90,11 +88,27 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 현재 남은 시간을 시스템 UI에 업데이트합니다.
+    /// </summary>
+    /// <param name="currentTime"></param>
     private void UpdateSystemTimerUI(int currentTime)
     {
         if (uiElements.TryGetValue("SystemUI", out GameObject systemUI))
         {
             uiElements["SystemUI"].GetComponent<SystemUI>().UpdateTextTimer(currentTime);
+        }
+    }
+
+    /// <summary>
+    /// 턴의 결과를 시스템 UI에 적용합니다.
+    /// </summary>
+    /// <param name="result"></param>
+    private void ApplyTurnResult(TurnResult result)
+    {
+        if (uiElements.TryGetValue("SystemUI", out GameObject systemUI))
+        {
+            uiElements["SystemUI"].GetComponent<SystemUI>().PlayTurnResultTextAnimation(result.ToString(), 0.1f);
         }
     }
 }
