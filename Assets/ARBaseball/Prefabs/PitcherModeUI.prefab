@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 8718824761376626494}
   - component: {fileID: 158902545584692406}
   m_Layer: 5
-  m_Name: PitcherUI
+  m_Name: PitcherModeUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
