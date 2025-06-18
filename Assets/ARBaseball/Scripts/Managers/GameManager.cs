@@ -24,8 +24,10 @@ public class GameManager : MonoBehaviour
 
     public event Action<GameState> OnGameStateChanged;
     public event Action<PlayMode> OnPlayModeChanged;
-
-
+    public event Action<int> OnRestTimeChanged;
+    private float defaultRestTime = 30f;
+    private float currentRestTime;
+    private float elapsedTime = 0f;
     //[Header("PlayerControll")]
     //public PlayerController PlayerController { get; private set; }
 
@@ -75,8 +77,38 @@ public class GameManager : MonoBehaviour
                 // 예: UI를 통해 플레이어가 게임을 시작할 수 있도록 안내합니다.
                 break;
             case GameState.Play:
-                // 게임이 진행 중입니다.
-                // 예: 플레이어와 AI의 턴을 처리합니다.
+                {
+                    if (currentPlayMode == PlayMode.PitcherMode)
+                    {
+                        // 피처 모드에서의 게임 로직을 처리합니다.
+                        // 플레이어 공 던지기 타이머 작동
+                        elapsedTime += Time.deltaTime;
+
+                        // 타이머가 1초 이상 경과하면 현재 남은 시간을 감소시킵니다.
+                        if (elapsedTime >= 1f)
+                        {
+                            currentRestTime -= 1f;
+                            elapsedTime = 0f; // 타이머 초기화
+
+                            if (currentRestTime < 0)
+                            {
+                                // 타이머가 0 이하로 내려가면 다음 턴으로 넘어갑니다.
+                            }
+                            OnRestTimeChanged?.Invoke((int)currentRestTime);
+                        }
+                    }
+                    else if (currentPlayMode == PlayMode.BatterMode)
+                    {
+                        // 배터 모드에서의 게임 로직을 처리합니다.
+                        // 예: 플레이어가 공을 치는 로직을 처리합니다.
+                    }
+                    else
+                    {
+                        Debug.LogWarning("현재 플레이 모드가 설정되지 않았습니다.");
+                        // 게임이 진행 중입니다.
+                        // 예: 플레이어와 AI의 턴을 처리합니다.
+                    }
+                }
                 break;
             case GameState.End:
                 // 게임이 종료되었습니다.
@@ -100,7 +132,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("게임 초기화 중...");
         ChangeGameState(GameState.Initializing);
         ChangePlayMode(PlayMode.None); // 초기 플레이 모드 설정
-
+        ChangePlayMode(PlayMode.PitcherMode);
         // 로직 1
         // AR을 통해 플레이어와 AI의 위치를 설정하는 로직을 여기에 작성합니다.
         //yield return new WaitUntil(() => arIsReady);
@@ -108,7 +140,7 @@ public class GameManager : MonoBehaviour
         // 로직 2
         // UI를 통해 플레이 모드를 선택하도록 안내합니다.
 
-        ChangeGameState(GameState.Ready);
+        ChangeGameState(GameState.Play);
         Debug.Log("게임 플레이 준비 완료. 현재 상태: " + currentGameState);
         OnGameStateChanged?.Invoke(currentGameState);
     }
@@ -124,6 +156,10 @@ public class GameManager : MonoBehaviour
             return; // 현재 상태와 동일하면 변경하지 않음
         }
         currentGameState = newGameState;
+        if (currentGameState == GameState.Play && currentPlayMode == PlayMode.PitcherMode)
+        {
+            ResetRestTime(); // 게임이 시작되면 타이머를 초기화합니다.
+        }
         Debug.Log("게임 상태가 변경되었습니다: " + currentGameState);
     }
 
@@ -141,5 +177,10 @@ public class GameManager : MonoBehaviour
         currentPlayMode = newMode;
         Debug.Log("플레이 모드가 변경되었습니다: " + currentPlayMode);
         OnPlayModeChanged?.Invoke(currentPlayMode);
+    }
+
+    private void ResetRestTime()
+    {
+        currentRestTime = defaultRestTime;
     }
 }
