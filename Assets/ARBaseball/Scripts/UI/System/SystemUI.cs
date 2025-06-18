@@ -12,7 +12,7 @@ public class SystemUI : MonoBehaviour
 {
     public GameObject turnResultPrefab;
 
-    private TextMeshProUGUI _textTimer;
+    public TextMeshProUGUI textTimer;
     
     [SerializeField] private Transform ballContainer;
     [SerializeField] private Transform strikeContainer;
@@ -32,7 +32,6 @@ public class SystemUI : MonoBehaviour
    
     private void Awake()
     {
-        _textTimer = GetComponent<TextMeshProUGUI>();
         GameObject turnSessionResult = GameObject.Find("PanelTurnSessionResult");
         _colors = new Color[] { ballColor, strikeColor, outColor };
 
@@ -91,9 +90,8 @@ public class SystemUI : MonoBehaviour
         }
     }
 
-    private void UpdateTextTimer(float time)
+    public void UpdateTextTimer(int time)
     {
-        int currentTime = (int)time;
-        _textTimer.text = currentTime.ToString();
+        textTimer.text = time.ToString();
     }
 }

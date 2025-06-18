@@ -36,6 +36,7 @@ public class UIManager : MonoBehaviour
     {
         // 게임 매니저의 이벤트에 구독합니다.
         GameManager.Instance.OnPlayModeChanged += ApplyPlayModeUI;
+        GameManager.Instance.OnRestTimeChanged += UpdateSystemTimerUI;
     }
 
     private void OnDisable()
@@ -86,6 +87,14 @@ public class UIManager : MonoBehaviour
             {
                 uiElement.SetActive(false); // 다른 UI 요소는 비활성화합니다.
             }
+        }
+    }
+
+    private void UpdateSystemTimerUI(int currentTime)
+    {
+        if (uiElements.TryGetValue("SystemUI", out GameObject systemUI))
+        {
+            uiElements["SystemUI"].GetComponent<SystemUI>().UpdateTextTimer(currentTime);
         }
     }
 }

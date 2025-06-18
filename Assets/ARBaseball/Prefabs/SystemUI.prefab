@@ -535,6 +535,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turnResultPrefab: {fileID: 55608969754203078, guid: 8c7b6456cd0feb44ebd493642f70ec18,
     type: 3}
+  textTimer: {fileID: 7992796646716800343}
   ballContainer: {fileID: 5525069719831739099}
   strikeContainer: {fileID: 4319736321228073627}
   outContainer: {fileID: 5991059727632596956}
