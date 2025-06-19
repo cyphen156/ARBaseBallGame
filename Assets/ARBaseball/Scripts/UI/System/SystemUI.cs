@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -10,8 +11,19 @@ using UnityEngine.UI;
 /// </summary>
 public class SystemUI : MonoBehaviour
 {
+    // 인터페이스 IExecuteable의 구현
+    enum CommandType 
+    {
+        None,
+        GamePlay,
+        GameExit
+    }
+
     public GameObject turnResultPrefab;
 
+    [Header("ButtonPanelControl")]
+    public GameObject buttonPanel;
+    
     public TextMeshProUGUI textTimer;
     public TextMeshProUGUI textTurnResult;
     
@@ -30,8 +42,10 @@ public class SystemUI : MonoBehaviour
     [SerializeField] private Color outColor = Color.red;
     private Color[] _colors;
 
-    private static int colorIndex = 0; // Static index to cycle through colors
-   
+    private static int colorIndex = 0;
+
+    
+
     private void Awake()
     {
         GameObject turnSessionResult = GameObject.Find("PanelTurnSessionResult");
@@ -123,5 +137,23 @@ public class SystemUI : MonoBehaviour
 
         yield return new WaitForSeconds(1f); 
         textTurnResult.text = "";
+    }
+
+    public void OnButtonClicked()
+    {
+        string buttonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
+        if (Enum.TryParse<Command>(buttonName, out Command command))
+        {
+            UIManager.Instance.RequestCommand(command);
+        }
+        else
+        {
+            Debug.LogWarning($"[SystemUI] '{buttonName}'은 유효한 CommandType이 아닙니다.");
+        }
+    }
+
+    public void SetButtonPanel(bool flag)
+    {
+        buttonPanel.SetActive(flag);
     }
 }

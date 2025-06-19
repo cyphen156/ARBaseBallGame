@@ -35,6 +35,7 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         // 게임 매니저의 이벤트에 구독합니다.
+        GameManager.Instance.OnGameStateChanged += ApplyGameStateInUI;
         GameManager.Instance.OnPlayModeChanged += ApplyPlayModeUI;
         GameManager.Instance.OnRestTimeChanged += UpdateSystemTimerUI;
     }
@@ -42,6 +43,7 @@ public class UIManager : MonoBehaviour
     private void OnDisable()
     {
         // 게임 매니저의 이벤트 구독을 해제합니다.
+        GameManager.Instance.OnGameStateChanged -= ApplyGameStateInUI;
         GameManager.Instance.OnPlayModeChanged -= ApplyPlayModeUI;
         GameManager.Instance.OnRestTimeChanged -= UpdateSystemTimerUI;
 
@@ -110,5 +112,33 @@ public class UIManager : MonoBehaviour
         {
             uiElements["SystemUI"].GetComponent<SystemUI>().PlayTurnResultTextAnimation(result.ToString(), 0.1f);
         }
+    }
+
+    public void RequestCommand(Command command)
+    {
+        switch (command)
+        {
+            case Command.PlayGame:
+                GameManager.Instance.TryChangeGameState(GameState.Play);
+                break;
+            case Command.EndGame:
+                GameManager.Instance.TryChangeGameState(GameState.End);
+                break;
+            case Command.ResetGame:
+                GameManager.Instance.TryChangeGameState(GameState.Initializing);
+                break;
+            case Command.ChangePlayMode:
+                break;
+            case Command.Exit:
+                break;
+            default:
+                Debug.LogWarning("Unknown command: " + command);
+                break;
+        }
+    }
+
+    public void ApplyGameStateInUI(GameState state)
+    {
+        
     }
 }

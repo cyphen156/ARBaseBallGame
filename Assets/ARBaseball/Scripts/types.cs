@@ -72,6 +72,15 @@ public enum TurnSessionResult
     Complete     // 히트, 홈런, 볼넷 등으로 종료됨
 }
 
+public enum Command
+{
+    None,           // 비정상적인 상태
+    PlayGame,       // 게임 시작
+    EndGame,        // 게임 종료
+    ResetGame,      // 게임 리셋
+    ChangePlayMode, // 플레이 모드 변경
+    Exit            // 게임 종료
+}
 /// <summary>
 /// 타입 정의를 위한 클래스입니다.
 /// </summary>

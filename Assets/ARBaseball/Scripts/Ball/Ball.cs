@@ -5,10 +5,11 @@ public class Ball : MonoBehaviour
 {
     public Rigidbody rb;
 
-    private float _speed = 10f;
+    private float _speed = 80f;
     private Vector3 _direction;
     private Vector3 _startPosition;
     private Vector3 _targetPosition = new Vector3(0, 1, 1);
+    private Vector3 _startPositionOffSet = new Vector3(0, 0f, 5f);
     private float _force = 5f;
     private float _lifetime = 3f;
     private float _resistance = 0.1f;
@@ -28,7 +29,7 @@ public class Ball : MonoBehaviour
 
     public void Shoot(Vector3 startPosition, Vector3 direction, float force, PitchType type)
     {
-        _startPosition = startPosition;
+        _startPosition = startPosition + _startPositionOffSet;
         _direction = direction.normalized;
         _force = force;
         _pitchType = type;

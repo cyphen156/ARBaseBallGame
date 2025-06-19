@@ -69,6 +69,12 @@ public class GameManager : MonoBehaviour
             GameObject go = Instantiate(ballPrefab, Camera.main.transform.position, Quaternion.identity);
             go.GetComponent<Ball>().Shoot(Camera.main.transform.position, Camera.main.transform.forward, 10f, PitchType.Fastball);
         }
+
+        if (Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            GameObject go = Instantiate(ballPrefab, Camera.main.transform.position, Quaternion.identity);
+            go.GetComponent<Ball>().Shoot(Camera.main.transform.position, Camera.main.transform.forward, 10f, PitchType.Curve);
+        }
         // 게임 상태에 따라 업데이트 로직을 처리합니다.
         switch (currentGameState)
         {
@@ -170,6 +176,7 @@ public class GameManager : MonoBehaviour
             ResetRestTime(); // 게임이 시작되면 타이머를 초기화합니다.
         }
         Debug.Log("게임 상태가 변경되었습니다: " + currentGameState);
+        OnGameStateChanged?.Invoke(currentGameState);
     }
 
     /// <summary>
@@ -191,5 +198,10 @@ public class GameManager : MonoBehaviour
     private void ResetRestTime()
     {
         currentRestTime = defaultRestTime;
+    }
+
+    internal void TryChangeGameState(GameState state)
+    {
+        ChangeGameState(state);
     }
 }
