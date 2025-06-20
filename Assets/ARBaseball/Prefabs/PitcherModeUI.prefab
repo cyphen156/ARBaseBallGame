@@ -266,6 +266,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67bb69ac45cb17f46b1bf4bc6a9aba5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPitchType: 0
+  pitchTypeSelector: {fileID: 0}
 --- !u!1 &1845494812132630856
 GameObject:
   m_ObjectHideFlags: 0

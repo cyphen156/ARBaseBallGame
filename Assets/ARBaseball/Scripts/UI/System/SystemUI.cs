@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// 항상 활성화 되어 있는 
 /// 게임 시스템을 UI를 관리하는 클래스입니다.
 /// </summary>
-public class SystemUI : MonoBehaviour
+public class SystemUI : UIBehaviour, IButtonInteractable
 {
     // 인터페이스 IExecuteable의 구현
     enum CommandType 
@@ -23,7 +23,10 @@ public class SystemUI : MonoBehaviour
 
     [Header("ButtonPanelControl")]
     public GameObject buttonPanel;
-    
+
+    [Header("PlayModePanelControl")]
+    public GameObject PlayModePanel;
+
     public TextMeshProUGUI textTimer;
     public TextMeshProUGUI textTurnResult;
     
@@ -43,8 +46,6 @@ public class SystemUI : MonoBehaviour
     private Color[] _colors;
 
     private static int colorIndex = 0;
-
-    
 
     private void Awake()
     {
@@ -141,9 +142,21 @@ public class SystemUI : MonoBehaviour
 
     public void OnButtonClicked()
     {
-        string buttonName = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
-        if (Enum.TryParse<Command>(buttonName, out Command command))
+        string buttonName = ButtonParser();
+
+        if (buttonName == "PitcherMode" || buttonName == "BatterMode")
         {
+            // PlayMode 열거형으로 변환합니다.
+            if (Enum.TryParse<PlayMode>(buttonName, out PlayMode playMode))
+            {
+                Debug.Log($"{playMode} 버튼 클릭됨");
+                UIManager.Instance.RequestCommand(playMode);
+            }
+        }
+        // CommandType 열거형으로 변환합니다.
+        else if (Enum.TryParse<Command>(buttonName, out Command command))
+        {
+            Debug.Log($"{ command } 버튼 클릭됨");
             UIManager.Instance.RequestCommand(command);
         }
         else
@@ -155,5 +168,10 @@ public class SystemUI : MonoBehaviour
     public void SetButtonPanel(bool flag)
     {
         buttonPanel.SetActive(flag);
+    }
+
+    public void SetPlayModePanel(bool flag)
+    {
+        PlayModePanel.SetActive(flag);
     }
 }

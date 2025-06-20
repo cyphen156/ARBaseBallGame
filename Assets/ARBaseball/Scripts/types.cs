@@ -23,11 +23,23 @@ public enum PlayMode
 }
 
 /// <summary>
+/// 피치 유형을 정의하는 열거형입니다.
+/// </summary>
+public enum PitchType
+{
+    None,
+    Fastball,
+    Curve,
+
+}
+
+/// <summary>
 /// 멀티 플레이 모드를 정의하는 열거형입니다.
 /// SinglePlayMode, MultiPlayMode
 /// </summary>
 public enum GameMode
 {
+    None,
     SinglePlayMode,
     MultiPlayMode
 }
@@ -75,10 +87,10 @@ public enum TurnSessionResult
 public enum Command
 {
     None,           // 비정상적인 상태
+    Initialize,     // 게임 초기화
+    ReadyGame,      // 게임 준비 상태로 전환
     PlayGame,       // 게임 시작
     EndGame,        // 게임 종료
-    ResetGame,      // 게임 리셋
-    ChangePlayMode, // 플레이 모드 변경
     Exit            // 게임 종료
 }
 /// <summary>

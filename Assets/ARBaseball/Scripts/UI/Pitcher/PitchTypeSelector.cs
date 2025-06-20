@@ -9,13 +9,7 @@ using UnityEngine.UI;
 /// 외부로 이벤트를 발생시킵니다.
 /// </summary>
 
-public enum PitchType
-{
-    Fastball,
-    Curve,
 
-    None
-}
 
 public class PitchTypeSelector : MonoBehaviour
 {

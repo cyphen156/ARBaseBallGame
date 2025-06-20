@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 투수용 UI 컴포넌트입니다.
 /// </summary>
-public class PitcherUI : MonoBehaviour
+public class PitcherUI : UIBehaviour
 { 
     [SerializeField] private PitchType currentPitchType;
     [SerializeField] private PitchTypeSelector pitchTypeSelector;
@@ -16,8 +16,13 @@ public class PitcherUI : MonoBehaviour
         pitchTypeSelector.OnPitchTypeChanged += OnPitchTypeChanged;
     }
 
+    /// <summary>
+    /// 토글 이벤트 발생으로 인한 데이터 갱신
+    /// </summary>
+    /// <param name="pitchType"></param>
     private void OnPitchTypeChanged(PitchType pitchType)
     {
         currentPitchType = pitchType;
     }
+
 }

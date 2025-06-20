@@ -64,17 +64,6 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            GameObject go = Instantiate(ballPrefab, Camera.main.transform.position, Quaternion.identity);
-            go.GetComponent<Ball>().Shoot(Camera.main.transform.position, Camera.main.transform.forward, 10f, PitchType.Fastball);
-        }
-
-        if (Mouse.current.rightButton.wasPressedThisFrame)
-        {
-            GameObject go = Instantiate(ballPrefab, Camera.main.transform.position, Quaternion.identity);
-            go.GetComponent<Ball>().Shoot(Camera.main.transform.position, Camera.main.transform.forward, 10f, PitchType.Curve);
-        }
         // 게임 상태에 따라 업데이트 로직을 처리합니다.
         switch (currentGameState)
         {
@@ -93,6 +82,17 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.Play:
                 {
+                    if (Mouse.current.leftButton.wasPressedThisFrame)
+                    {
+                        GameObject go = Instantiate(ballPrefab, Camera.main.transform.position, Quaternion.identity);
+                        go.GetComponent<Ball>().Shoot(Camera.main.transform.position, Camera.main.transform.forward, 10f, PitchType.Fastball);
+                    }
+
+                    if (Mouse.current.rightButton.wasPressedThisFrame)
+                    {
+                        GameObject go = Instantiate(ballPrefab, Camera.main.transform.position, Quaternion.identity);
+                        go.GetComponent<Ball>().Shoot(Camera.main.transform.position, Camera.main.transform.forward, 10f, PitchType.Curve);
+                    }
                     if (currentPlayMode == PlayMode.PitcherMode)
                     {
                         // 피처 모드에서의 게임 로직을 처리합니다.
@@ -147,7 +147,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("게임 초기화 중...");
         ChangeGameState(GameState.Initializing);
         ChangePlayMode(PlayMode.None); // 초기 플레이 모드 설정
-        ChangePlayMode(PlayMode.PitcherMode);
+        // 초기 1회 강제 UI 업데이트
+        OnPlayModeChanged?.Invoke(currentPlayMode);
+
         // 로직 1
         // AR을 통해 플레이어와 AI의 위치를 설정하는 로직을 여기에 작성합니다.
         //yield return new WaitUntil(() => arIsReady);
@@ -155,7 +157,7 @@ public class GameManager : MonoBehaviour
         // 로직 2
         // UI를 통해 플레이 모드를 선택하도록 안내합니다.
 
-        ChangeGameState(GameState.Play);
+
         Debug.Log("게임 플레이 준비 완료. 현재 상태: " + currentGameState);
         OnGameStateChanged?.Invoke(currentGameState);
     }
@@ -193,6 +195,7 @@ public class GameManager : MonoBehaviour
         currentPlayMode = newMode;
         Debug.Log("플레이 모드가 변경되었습니다: " + currentPlayMode);
         OnPlayModeChanged?.Invoke(currentPlayMode);
+        ChangeGameState(GameState.Ready); // 플레이 모드가 변경되면 게임 상태를 Ready로 변경합니다.
     }
 
     private void ResetRestTime()
@@ -200,8 +203,30 @@ public class GameManager : MonoBehaviour
         currentRestTime = defaultRestTime;
     }
 
-    internal void TryChangeGameState(GameState state)
+    public void TryChangeGameState(GameState state)
     {
         ChangeGameState(state);
+    }
+
+    public void TryChangeApplicationState(string command)
+    {
+        switch (command)
+        {
+            case "Exit":
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+                break;
+            default:
+                Debug.LogWarning("알 수 없는 명령어입니다: " + command);
+                break;
+        }
+    }
+
+    public void TryChangePlayMode(PlayMode playMode)
+    {   
+        ChangePlayMode(playMode);
     }
 }
