@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,9 +9,23 @@ using UnityEngine.UI;
 /// 항상 활성화 되어 있는 
 /// 게임 시스템을 UI를 관리하는 클래스입니다.
 /// </summary>
-public class SystemUI : MonoBehaviour
+public class SystemUI : UIBehaviour, IButtonInteractable
 {
+    // 인터페이스 IExecuteable의 구현
+    enum CommandType 
+    {
+        None,
+        GamePlay,
+        GameExit
+    }
+
     public GameObject turnResultPrefab;
+
+    [Header("ButtonPanelControl")]
+    public GameObject buttonPanel;
+
+    [Header("PlayModePanelControl")]
+    public GameObject PlayModePanel;
 
     public TextMeshProUGUI textTimer;
     public TextMeshProUGUI textTurnResult;
@@ -30,8 +45,8 @@ public class SystemUI : MonoBehaviour
     [SerializeField] private Color outColor = Color.red;
     private Color[] _colors;
 
-    private static int colorIndex = 0; // Static index to cycle through colors
-   
+    private static int colorIndex = 0;
+
     private void Awake()
     {
         GameObject turnSessionResult = GameObject.Find("PanelTurnSessionResult");
@@ -123,5 +138,40 @@ public class SystemUI : MonoBehaviour
 
         yield return new WaitForSeconds(1f); 
         textTurnResult.text = "";
+    }
+
+    public void OnButtonClicked()
+    {
+        string buttonName = ButtonParser();
+
+        if (buttonName == "PitcherMode" || buttonName == "BatterMode")
+        {
+            // PlayMode 열거형으로 변환합니다.
+            if (Enum.TryParse<PlayMode>(buttonName, out PlayMode playMode))
+            {
+                Debug.Log($"{playMode} 버튼 클릭됨");
+                UIManager.Instance.RequestCommand(playMode);
+            }
+        }
+        // CommandType 열거형으로 변환합니다.
+        else if (Enum.TryParse<Command>(buttonName, out Command command))
+        {
+            Debug.Log($"{ command } 버튼 클릭됨");
+            UIManager.Instance.RequestCommand(command);
+        }
+        else
+        {
+            Debug.LogWarning($"[SystemUI] '{buttonName}'은 유효한 CommandType이 아닙니다.");
+        }
+    }
+
+    public void SetButtonPanel(bool flag)
+    {
+        buttonPanel.SetActive(flag);
+    }
+
+    public void SetPlayModePanel(bool flag)
+    {
+        PlayModePanel.SetActive(flag);
     }
 }

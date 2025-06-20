@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using UnityEngine;
 
 /// <summary>
@@ -35,6 +36,7 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         // 게임 매니저의 이벤트에 구독합니다.
+        GameManager.Instance.OnGameStateChanged += ApplyGameStateInUI;
         GameManager.Instance.OnPlayModeChanged += ApplyPlayModeUI;
         GameManager.Instance.OnRestTimeChanged += UpdateSystemTimerUI;
     }
@@ -42,6 +44,7 @@ public class UIManager : MonoBehaviour
     private void OnDisable()
     {
         // 게임 매니저의 이벤트 구독을 해제합니다.
+        GameManager.Instance.OnGameStateChanged -= ApplyGameStateInUI;
         GameManager.Instance.OnPlayModeChanged -= ApplyPlayModeUI;
         GameManager.Instance.OnRestTimeChanged -= UpdateSystemTimerUI;
 
@@ -109,6 +112,70 @@ public class UIManager : MonoBehaviour
         if (uiElements.TryGetValue("SystemUI", out GameObject systemUI))
         {
             uiElements["SystemUI"].GetComponent<SystemUI>().PlayTurnResultTextAnimation(result.ToString(), 0.1f);
+        }
+    }
+
+    public void RequestCommand(PlayMode playMode)
+    {
+        switch (playMode)
+        {
+            case PlayMode.PitcherMode:
+                GameManager.Instance.TryChangePlayMode(PlayMode.PitcherMode);
+                break;
+            case PlayMode.BatterMode:
+                GameManager.Instance.TryChangePlayMode(PlayMode.BatterMode);
+                break;
+            default:
+                Debug.LogWarning("[UIManager] 지원하지 않는 플레이 모드입니다: " + playMode);
+                break;
+        }
+    }
+
+    public void RequestCommand(Command command, object parameter = null)
+    {
+        switch (command)
+        {
+            case Command.Initialize:
+                GameManager.Instance.TryChangeGameState(GameState.Initializing);
+                break;
+            case Command.ReadyGame:
+                GameManager.Instance.TryChangeGameState(GameState.Ready);
+                break;
+            case Command.PlayGame:
+                GameManager.Instance.TryChangeGameState(GameState.Play);
+                break;
+            case Command.EndGame:
+                GameManager.Instance.TryChangeGameState(GameState.End);
+                break;
+            case Command.Exit:
+                GameManager.Instance.TryChangeApplicationState("Exit");
+                break;
+            default:
+                Debug.LogWarning("Unknown command: " + command);
+                break;
+        }
+    }
+
+    private void ApplyGameStateInUI(GameState state)
+    {
+        bool activeFlag = true;
+
+        if (uiElements.TryGetValue("SystemUI", out GameObject systemUI))
+        {
+            if (state == GameState.Initializing)
+            {
+                uiElements["SystemUI"].GetComponent<SystemUI>().SetPlayModePanel(activeFlag);
+            }
+            else if (state == GameState.Ready)
+            {
+                uiElements["SystemUI"].GetComponent<SystemUI>().SetPlayModePanel(!activeFlag);
+                uiElements["SystemUI"].GetComponent<SystemUI>().SetButtonPanel(activeFlag);
+            }
+            else if (state == GameState.Play)
+            {
+                activeFlag = false;
+                uiElements["SystemUI"].GetComponent<SystemUI>().SetButtonPanel(activeFlag);
+            }
         }
     }
 }
