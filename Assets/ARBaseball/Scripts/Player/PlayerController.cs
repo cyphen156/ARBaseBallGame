@@ -9,12 +9,39 @@ using UnityEngine.XR.ARFoundation.Samples;
 public class PlayerController : MonoBehaviour
 {
     [Header("Input actions")]
-    private InputActionReferences _inputActionReferences;
+    public InputActionReferences _inputActionReferences;
 
     private bool _isDragging;
     private double _beginDragTimeMark;
     private Vector2 _touchStartPosition;
     private Vector2 _touchEndPosition;
+
+#if UNITY_EDITOR
+    private void Update()
+    {
+        if (Mouse.current == null)
+            return;
+
+        // 마우스 버튼 눌림
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            _isDragging = true;
+            _touchStartPosition = Mouse.current.position.ReadValue();
+            _beginDragTimeMark = Time.timeAsDouble;
+        }
+
+        // 마우스 버튼 뗌
+        if (_isDragging && Mouse.current.leftButton.wasReleasedThisFrame)
+        {
+            _isDragging = false;
+            _touchEndPosition = Mouse.current.position.ReadValue();
+
+            double elapsedDraggingTime = Time.timeAsDouble - _beginDragTimeMark;
+
+            GameManager.Instance.ProcessInput(_touchStartPosition, _touchEndPosition, elapsedDraggingTime);
+        }
+    }
+#endif
 
     private void OnEnable()
     {

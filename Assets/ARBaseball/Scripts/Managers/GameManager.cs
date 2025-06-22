@@ -22,16 +22,16 @@ public class GameManager : MonoBehaviour
     [Header("GameState")]
     public static GameManager Instance { get; private set; }
     [SerializeField] private GameState currentGameState;  // 현재 게임 상태
-
     [SerializeField] private PlayMode currentPlayMode;  // 플레이 모드 선택 여부
-
+    [SerializeField] private PitchType currentPitchType;
+    
     public event Action<GameState> OnGameStateChanged;
     public event Action<PlayMode> OnPlayModeChanged;
     public event Action<int> OnRestTimeChanged;
     private float defaultRestTime = 30f;
     private float currentRestTime;
     private float elapsedTime = 0f;
-   
+
 
     private void Awake()
     {
@@ -138,17 +138,21 @@ public class GameManager : MonoBehaviour
         Debug.Log("게임 초기화 중...");
         ChangeGameState(GameState.Initializing);
         ChangePlayMode(PlayMode.None); // 초기 플레이 모드 설정
+
         // 초기 1회 강제 UI 업데이트
         OnPlayModeChanged?.Invoke(currentPlayMode);
+        UIManager.Instance.RequestUpdateUIForInitComplete(0);
 
         // 로직 1
         // AR을 통해 플레이어와 AI의 위치를 설정하는 로직을 여기에 작성합니다.
         yield return new WaitUntil(()=> baseballGameCreator.isCreated);
         Debug.Log("AR BaseballGameSetUP Complete");
+        UIManager.Instance.RequestUpdateUIForInitComplete(1);
 
         // 로직 2
         // UI를 통해 플레이 모드를 선택하도록 안내합니다.
-
+        yield return new WaitUntil(() => currentPlayMode != PlayMode.None);
+        UIManager.Instance.RequestUpdateUIForInitComplete(2);
 
         Debug.Log("게임 플레이 준비 완료. 현재 상태: " + currentGameState);
         OnGameStateChanged?.Invoke(currentGameState);
@@ -190,6 +194,16 @@ public class GameManager : MonoBehaviour
         ChangeGameState(GameState.Ready); // 플레이 모드가 변경되면 게임 상태를 Ready로 변경합니다.
     }
 
+    private void ChangePitchType(PitchType newType)
+    {
+        if (newType == currentPitchType)
+        {
+            return;
+        }
+
+        currentPitchType = newType;
+        Debug.Log("피칭 모드가 변경되었습니다: " + currentPitchType);
+    }
     private void ResetRestTime()
     {
         currentRestTime = defaultRestTime;
@@ -222,11 +236,21 @@ public class GameManager : MonoBehaviour
         ChangePlayMode(playMode);
     }
 
+    public void TryChangePitchType(PitchType pitchType)
+    {
+        ChangePitchType(pitchType);
+    }
+
     public void ProcessInput(Vector2 StartPosition, Vector2 EndPosition, double elapsedDraggingTime)
     {
         if (currentGameState == GameState.Initializing)
         {
             // 스트라이크 존 생성 로직을 여기에 작성합니다.
+            if (baseballGameCreator.isCreated)
+            {
+                return;
+            }
+
             baseballGameCreator.GenerateBaseballGame(EndPosition);
         }
 
@@ -234,7 +258,14 @@ public class GameManager : MonoBehaviour
         {
             // 플레이어의 입력을 처리합니다.
             // 예: 공을 던지거나 치는 로직을 여기에 작성합니다.
-            Debug.Log($"[GameManager] 입력 처리: 시작 위치 {StartPosition}, 끝 위치 {EndPosition}, 드래그 시간 {elapsedDraggingTime}");
+            if (currentPlayMode == PlayMode.PitcherMode)
+            {
+
+            }
+            else if (currentPlayMode == PlayMode.BatterMode)
+            {
+
+            }
         }
     }
 }

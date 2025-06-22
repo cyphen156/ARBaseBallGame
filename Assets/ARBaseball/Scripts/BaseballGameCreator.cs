@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.XR.ARFoundation;
-using UnityEngine.XR.ARFoundation.Samples;
 
 
 /// <summary>
@@ -40,7 +38,7 @@ public class BaseballGameCreator : MonoBehaviour
 
             GameObject baseballGameObject = Instantiate(baseballGamePrefab, spawnPosition, Quaternion.identity);
             Vector3 direction = Camera.main.transform.position - baseballGameObject.transform.position;
-            baseballGameObject.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            baseballGameObject.transform.rotation = Quaternion.LookRotation(-new Vector3(direction.x, 0, direction.z));
             isCreated = true;
         }
     }

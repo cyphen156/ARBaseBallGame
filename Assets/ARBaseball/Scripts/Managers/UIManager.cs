@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using UnityEngine;
 
 /// <summary>
@@ -102,6 +101,51 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void UpdateUIForInitComplete(int sequenceNumber)
+    {
+        string target;
+
+        switch (sequenceNumber)
+        {
+            case 0:
+                target = "TextARInput";
+                break;
+
+            case 1:
+                target = "PlayModePanel";
+                break;
+
+            case 2:
+                target = "ButtonPanel";
+                break;
+            default:
+                target = "null";
+                Debug.Log("그런 시퀀스 넘버는 없습니다.");
+                break;
+        }
+        SetOnlyActiveInSystemUI(target);
+    }
+
+    private void SetOnlyActiveInSystemUI(string targetName)
+    {
+        if (!uiElements.TryGetValue("SystemUI", out GameObject systemUI))
+        {
+            return;
+        }
+
+        if (targetName == "")
+        {
+            Debug.Log("그런 UI요소는 없습니다.");
+            return;
+        }
+
+        foreach (Transform child in systemUI.transform)
+        {
+            bool isTarget = child.name == targetName;
+            child.gameObject.SetActive(isTarget);
+        }
+    }
+
     /// <summary>
     /// 턴의 결과를 시스템 UI에 적용합니다.
     /// </summary>
@@ -112,6 +156,30 @@ public class UIManager : MonoBehaviour
         {
             uiElements["SystemUI"].GetComponent<SystemUI>().PlayTurnResultTextAnimation(result.ToString(), 0.1f);
         }
+    }
+
+    public void RequestCommand(PitchType pitchType)
+    {
+        switch (pitchType)
+        {
+            case PitchType.None:
+                GameManager.Instance.TryChangePitchType(PitchType.None);
+                break;
+            case PitchType.Fastball:
+                GameManager.Instance.TryChangePitchType(PitchType.Fastball);
+                break;
+            case PitchType.Curve:
+                GameManager.Instance.TryChangePitchType(PitchType.Curve);
+                break;
+            default:
+                Debug.LogWarning("[UIManager] 지원하지 않는 피칭 모드입니다: " + pitchType);
+                break;
+        }
+    }
+
+    public void RequestUpdateUIForInitComplete(int sequenceNumber)
+    {
+        UpdateUIForInitComplete(sequenceNumber);
     }
 
     public void RequestCommand(PlayMode playMode)
@@ -159,22 +227,27 @@ public class UIManager : MonoBehaviour
     {
         bool activeFlag = true;
 
-        if (uiElements.TryGetValue("SystemUI", out GameObject systemUI))
+        if (!uiElements.TryGetValue("SystemUI", out GameObject systemUI))
+            return;
+
+        var system = systemUI.GetComponent<SystemUI>();
+
+        switch (state)
         {
-            if (state == GameState.Initializing)
-            {
-                uiElements["SystemUI"].GetComponent<SystemUI>().SetPlayModePanel(activeFlag);
-            }
-            else if (state == GameState.Ready)
-            {
-                uiElements["SystemUI"].GetComponent<SystemUI>().SetPlayModePanel(!activeFlag);
-                uiElements["SystemUI"].GetComponent<SystemUI>().SetButtonPanel(activeFlag);
-            }
-            else if (state == GameState.Play)
-            {
-                activeFlag = false;
-                uiElements["SystemUI"].GetComponent<SystemUI>().SetButtonPanel(activeFlag);
-            }
+            case GameState.Initializing:
+                system.SetArInput(activeFlag);
+                break;
+
+            case GameState.Ready:
+                system.SetArInput(!activeFlag);
+                system.SetPlayModePanel(!activeFlag);
+                system.SetButtonPanel(activeFlag);
+                break;
+
+            case GameState.Play:
+                system.SetButtonPanel(!activeFlag);
+                system.SetGamePlayUI(activeFlag);
+                break;
         }
     }
 }

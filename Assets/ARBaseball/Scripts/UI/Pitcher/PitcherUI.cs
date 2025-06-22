@@ -23,6 +23,7 @@ public class PitcherUI : UIBehaviour
     private void OnPitchTypeChanged(PitchType pitchType)
     {
         currentPitchType = pitchType;
+        UIManager.Instance.RequestCommand(currentPitchType);
     }
 
 }
