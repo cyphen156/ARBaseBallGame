@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.XR.ARFoundation;
-using UnityEngine.XR.ARFoundation.Samples;
 
 
 /// <summary>
@@ -15,46 +13,21 @@ public class BaseballGameCreator : MonoBehaviour
     [SerializeField]
     private ARRaycastManager _arRaycastManager;
     [SerializeField]
-    private InputActionReferences _inputActionReferences;
 
-    private Vector2 _touchPosition;
-    private bool _isCreated = false;
-
-    void OnEnable()
-    {
-        if (_inputActionReferences.screenTapPosition.action != null)
-            _inputActionReferences.screenTapPosition.action.performed += OnScreenTapPositionPerformed;
-
-        if (_inputActionReferences.screenTap.action != null)
-            _inputActionReferences.screenTap.action.canceled += OnScreenTouchUp;
-    }
-
-    private void OnDisable()
-    {
-        if (_inputActionReferences.screenTapPosition.action != null)
-            _inputActionReferences.screenTapPosition.action.performed -= OnScreenTapPositionPerformed;
-
-        if (_inputActionReferences.screenTap.action != null)
-            _inputActionReferences.screenTap.action.canceled -= OnScreenTouchUp;
-    }
-
-    private void OnScreenTapPositionPerformed(InputAction.CallbackContext obj)
-    {
-        _touchPosition = obj.ReadValue<Vector2>();
-    }
+    public bool isCreated = false;
 
     /// <summary>
     /// 스크린 터치 뗐을 때 baseball game prefab 생성
     /// </summary>
     /// <param name="obj"></param>
-    private void OnScreenTouchUp(InputAction.CallbackContext obj)
+    public void GenerateBaseballGame(Vector2 touchPosition)
     {
-        if (_isCreated)
+        if (isCreated)
             return;
 
-        Debug.Log($"Touch : {_touchPosition}");
+        Debug.Log($"Touch : {touchPosition}");
 
-        Ray ray = Camera.main.ScreenPointToRay(_touchPosition);
+        Ray ray = Camera.main.ScreenPointToRay(touchPosition);
         List<ARRaycastHit> hitResults = new List<ARRaycastHit>();
 
         _arRaycastManager.Raycast(ray, hitResults);
@@ -65,8 +38,8 @@ public class BaseballGameCreator : MonoBehaviour
 
             GameObject baseballGameObject = Instantiate(baseballGamePrefab, spawnPosition, Quaternion.identity);
             Vector3 direction = Camera.main.transform.position - baseballGameObject.transform.position;
-            baseballGameObject.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-            _isCreated = true;
+            baseballGameObject.transform.rotation = Quaternion.LookRotation(-new Vector3(direction.x, 0, direction.z));
+            isCreated = true;
         }
     }
 }

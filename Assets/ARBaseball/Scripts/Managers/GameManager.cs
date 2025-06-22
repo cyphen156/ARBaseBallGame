@@ -10,9 +10,8 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    // 테스트용
     public GameObject ballPrefab;  // 공 프리팹
-
+    private BaseballGameCreator baseballGameCreator;  // 야구 게임 생성기 
     /// <summary>
     /// todos : 
     /// 1. 플레이어 입력에 따라 게임 상태를 업데이트합니다.
@@ -23,24 +22,15 @@ public class GameManager : MonoBehaviour
     [Header("GameState")]
     public static GameManager Instance { get; private set; }
     [SerializeField] private GameState currentGameState;  // 현재 게임 상태
-
     [SerializeField] private PlayMode currentPlayMode;  // 플레이 모드 선택 여부
-
+    [SerializeField] private PitchType currentPitchType;
+    
     public event Action<GameState> OnGameStateChanged;
     public event Action<PlayMode> OnPlayModeChanged;
     public event Action<int> OnRestTimeChanged;
     private float defaultRestTime = 30f;
     private float currentRestTime;
     private float elapsedTime = 0f;
-    //[Header("PlayerControll")]
-    //public PlayerController PlayerController { get; private set; }
-
-    //[Header("AIControll")]
-    //public AIController AIController { get; private set; }
-
-
-    //[Header("UIControll")]
-    //public UIController UIController { get; private set; }
 
 
     private void Awake()
@@ -58,8 +48,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        baseballGameCreator = GetComponent<BaseballGameCreator>();
         UIManager.Instance.InitializeUI();
-        InitializeGame();
+        StartCoroutine(C_InitializeGame());
     }
 
     private void Update()
@@ -140,23 +131,28 @@ public class GameManager : MonoBehaviour
     /// 위치 설정이 완료되면 플레이어는 플레이 모드를 선택할 수 있습니다.
     /// 플레이 모드가 선택되면 게임 상태를 Ready로 변경합니다.
     /// </summary>
-    private void InitializeGame()
+    private IEnumerator C_InitializeGame()
     {
         // 게임 초기화 로직을 여기에 작성합니다.
         // 예: 플레이어와 AI 컨트롤러 초기화, UI 설정 등
         Debug.Log("게임 초기화 중...");
         ChangeGameState(GameState.Initializing);
         ChangePlayMode(PlayMode.None); // 초기 플레이 모드 설정
+
         // 초기 1회 강제 UI 업데이트
         OnPlayModeChanged?.Invoke(currentPlayMode);
+        UIManager.Instance.RequestUpdateUIForInitComplete(0);
 
         // 로직 1
         // AR을 통해 플레이어와 AI의 위치를 설정하는 로직을 여기에 작성합니다.
-        //yield return new WaitUntil(() => arIsReady);
+        yield return new WaitUntil(()=> baseballGameCreator.isCreated);
+        Debug.Log("AR BaseballGameSetUP Complete");
+        UIManager.Instance.RequestUpdateUIForInitComplete(1);
 
         // 로직 2
         // UI를 통해 플레이 모드를 선택하도록 안내합니다.
-
+        yield return new WaitUntil(() => currentPlayMode != PlayMode.None);
+        UIManager.Instance.RequestUpdateUIForInitComplete(2);
 
         Debug.Log("게임 플레이 준비 완료. 현재 상태: " + currentGameState);
         OnGameStateChanged?.Invoke(currentGameState);
@@ -198,6 +194,16 @@ public class GameManager : MonoBehaviour
         ChangeGameState(GameState.Ready); // 플레이 모드가 변경되면 게임 상태를 Ready로 변경합니다.
     }
 
+    private void ChangePitchType(PitchType newType)
+    {
+        if (newType == currentPitchType)
+        {
+            return;
+        }
+
+        currentPitchType = newType;
+        Debug.Log("피칭 모드가 변경되었습니다: " + currentPitchType);
+    }
     private void ResetRestTime()
     {
         currentRestTime = defaultRestTime;
@@ -228,5 +234,38 @@ public class GameManager : MonoBehaviour
     public void TryChangePlayMode(PlayMode playMode)
     {   
         ChangePlayMode(playMode);
+    }
+
+    public void TryChangePitchType(PitchType pitchType)
+    {
+        ChangePitchType(pitchType);
+    }
+
+    public void ProcessInput(Vector2 StartPosition, Vector2 EndPosition, double elapsedDraggingTime)
+    {
+        if (currentGameState == GameState.Initializing)
+        {
+            // 스트라이크 존 생성 로직을 여기에 작성합니다.
+            if (baseballGameCreator.isCreated)
+            {
+                return;
+            }
+
+            baseballGameCreator.GenerateBaseballGame(EndPosition);
+        }
+
+        else if (currentGameState == GameState.Play)
+        {
+            // 플레이어의 입력을 처리합니다.
+            // 예: 공을 던지거나 치는 로직을 여기에 작성합니다.
+            if (currentPlayMode == PlayMode.PitcherMode)
+            {
+
+            }
+            else if (currentPlayMode == PlayMode.BatterMode)
+            {
+
+            }
+        }
     }
 }

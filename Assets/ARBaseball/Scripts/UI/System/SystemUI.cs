@@ -11,25 +11,21 @@ using UnityEngine.UI;
 /// </summary>
 public class SystemUI : UIBehaviour, IButtonInteractable
 {
-    // 인터페이스 IExecuteable의 구현
-    enum CommandType 
-    {
-        None,
-        GamePlay,
-        GameExit
-    }
-
     public GameObject turnResultPrefab;
 
     [Header("ButtonPanelControl")]
     public GameObject buttonPanel;
 
     [Header("PlayModePanelControl")]
-    public GameObject PlayModePanel;
+    public GameObject playModePanel;
+
+    public GameObject textARInput;
+
+    public GameObject PanelTurnSessonResult;
 
     public TextMeshProUGUI textTimer;
     public TextMeshProUGUI textTurnResult;
-    
+
     [SerializeField] private Transform ballContainer;
     [SerializeField] private Transform strikeContainer;
     [SerializeField] private Transform outContainer;
@@ -172,6 +168,18 @@ public class SystemUI : UIBehaviour, IButtonInteractable
 
     public void SetPlayModePanel(bool flag)
     {
-        PlayModePanel.SetActive(flag);
+        playModePanel.SetActive(flag);
+    }
+
+    public void SetArInput(bool flag)
+    {
+        textARInput.SetActive(flag);
+    }
+
+    public void SetGamePlayUI(bool flag)
+    {
+        textTimer.gameObject.SetActive(flag);
+        PanelTurnSessonResult.SetActive(flag);
+        textTurnResult.gameObject.SetActive(flag);
     }
 }
