@@ -47,7 +47,6 @@ public class UIManager : MonoBehaviour
         GameManager.Instance.OnGameStateChanged -= ApplyGameStateInUI;
         GameManager.Instance.OnPlayModeChanged -= ApplyPlayModeUI;
         GameManager.Instance.OnRestTimeChanged -= UpdateSystemTimerUI;
-
     }
 
     /// <summary>
