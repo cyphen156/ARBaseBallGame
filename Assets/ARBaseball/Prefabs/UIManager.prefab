@@ -45,7 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UIPrefabs:
-  - {fileID: 5194415042851906832, guid: 551847dfaf7657042b1d51746a8ba901, type: 3}
   - {fileID: 1425860357430417355, guid: b1fba061cd5bbf5499f2ac9a6beff39c, type: 3}
-  - {fileID: 5698137443566027674, guid: 2c7674eef214eb949a873a32c4ee6b4e, type: 3}
   currentPlayModeUI: {fileID: 0}
