@@ -36,13 +36,9 @@ public class BaseballGameCreator : MonoBehaviour
         {
             Vector3 spawnPosition = hitResults[0].pose.position;
 
-            Vector3 direction = Camera.main.transform.position - spawnPosition;
-            direction.y = 0; // 평면 위에 생성되도록 Y 좌표를 0으로 설정
-            direction += new Vector3(0, 0.1f, 0); // 약간 위로 올려서 생성
-
-            GameObject baseballGameObject = Instantiate(baseballGamePrefab, spawnPosition, Quaternion.Euler(direction));
-            //Vector3 direction = Camera.main.transform.position - baseballGameObject.transform.position;
-            //baseballGameObject.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            GameObject baseballGameObject = Instantiate(baseballGamePrefab, spawnPosition, Quaternion.identity);
+            Vector3 direction = Camera.main.transform.position - baseballGameObject.transform.position;
+            baseballGameObject.transform.rotation = Quaternion.LookRotation(-new Vector3(direction.x, 0, direction.z));
             isCreated = true;
         }
     }

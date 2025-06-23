@@ -46,8 +46,6 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         _inputActionReferences.screenTapPosition.action.performed += OnTouchPositionPerformed;
-        _inputActionReferences.screenTapPosition.action.Enable();
-        _inputActionReferences.screenTap.action.started += OnTouchPressPerformed;
         _inputActionReferences.screenTap.action.canceled += OnTouchPressPerformed;
         _inputActionReferences.screenTap.action.Enable();
     }
@@ -55,8 +53,6 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         _inputActionReferences.screenTapPosition.action.performed -= OnTouchPositionPerformed;
-        _inputActionReferences.screenTapPosition.action.Disable();
-        _inputActionReferences.screenTap.action.started -= OnTouchPressPerformed;
         _inputActionReferences.screenTap.action.canceled -= OnTouchPressPerformed;
         _inputActionReferences.screenTap.action.Disable();
     }
@@ -64,7 +60,6 @@ public class PlayerController : MonoBehaviour
     void OnTouchPositionPerformed(InputAction.CallbackContext context)
     {
         _touchEndPosition = context.ReadValue<Vector2>();
-        Debug.Log("터치 포지션");
     }
 
     void OnTouchPressPerformed(InputAction.CallbackContext context)
@@ -72,7 +67,6 @@ public class PlayerController : MonoBehaviour
         // 터치 눌림
         if (context.ReadValueAsButton())
         {
-            Debug.Log("드래그 시작");
             if (_isDragging == false)
             {
                 _isDragging = true;
@@ -83,7 +77,6 @@ public class PlayerController : MonoBehaviour
         // 터치 뗌
         else
         {
-            Debug.Log("드래그 끝");
             if (_isDragging)
             {
                 _isDragging = false;
