@@ -31,7 +31,8 @@ public class GameManager : MonoBehaviour
     private float defaultRestTime = 30f;
     private float currentRestTime;
     private float elapsedTime = 0f;
-
+    public float minForce = 10f;
+    public float maxForce = 25f;
 
     private void Awake()
     {
@@ -73,17 +74,6 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.Play:
                 {
-                    if (Mouse.current.leftButton.wasPressedThisFrame)
-                    {
-                        GameObject go = Instantiate(ballPrefab, Camera.main.transform.position, Quaternion.identity);
-                        go.GetComponent<Ball>().Shoot(Camera.main.transform.position, Camera.main.transform.forward, 10f, PitchType.Fastball);
-                    }
-
-                    if (Mouse.current.rightButton.wasPressedThisFrame)
-                    {
-                        GameObject go = Instantiate(ballPrefab, Camera.main.transform.position, Quaternion.identity);
-                        go.GetComponent<Ball>().Shoot(Camera.main.transform.position, Camera.main.transform.forward, 10f, PitchType.Curve);
-                    }
                     if (currentPlayMode == PlayMode.PitcherMode)
                     {
                         // 피처 모드에서의 게임 로직을 처리합니다.
@@ -256,11 +246,25 @@ public class GameManager : MonoBehaviour
 
         else if (currentGameState == GameState.Play)
         {
-            // 플레이어의 입력을 처리합니다.
-            // 예: 공을 던지거나 치는 로직을 여기에 작성합니다.
+            Vector2 drag = EndPosition - StartPosition;
+            float force = Mathf.Clamp((float)elapsedDraggingTime * 10f, minForce, maxForce);
+
+            Vector3 spawnPosition = Camera.main.transform.position + Camera.main.transform.forward * 0.5f;
+            Vector3 baseDirection = Camera.main.transform.forward;
+
+            float screenRatio = (float)Screen.height / Screen.width;
+
+            float horizontalOffset = Mathf.Clamp(drag.x / Screen.width, -0.3f, 0.3f);
+            float verticalOffset = Mathf.Clamp((drag.y / Screen.height) * screenRatio, -0.3f, 0.3f);
+
+            Vector3 direction = (baseDirection
+                                + Camera.main.transform.right * horizontalOffset
+                                + Camera.main.transform.up * verticalOffset).normalized;
+
             if (currentPlayMode == PlayMode.PitcherMode)
             {
-
+                GameObject go = Instantiate(ballPrefab, spawnPosition, Quaternion.identity);
+                go.GetComponent<Ball>().Shoot(spawnPosition, direction, force, currentPitchType);
             }
             else if (currentPlayMode == PlayMode.BatterMode)
             {

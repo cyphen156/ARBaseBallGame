@@ -1,3 +1,4 @@
+using System.Data.Common;
 using UnityEngine;
 
 
@@ -13,7 +14,7 @@ public class Ball : MonoBehaviour
     [Header("Pitch Settings")]
     [SerializeField] private float _lifetime = 15f;
     [SerializeField] private float _resistance = 0.1f;
-    [SerializeField] private float magnusStrength = 5f;
+    [SerializeField] private float magnusStrength = 0.1f;
 
     private Vector3 _startPosition;
     private Vector3 _direction;
@@ -26,7 +27,7 @@ public class Ball : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
+        Physics.gravity = new Vector3(0, -9.81f * 0.3f, 0);    // 중력값 보정
     }
 
     private void Start()
@@ -57,15 +58,23 @@ public class Ball : MonoBehaviour
                 rb.angularVelocity = transform.right * -30f; // Backspin
                 break;
             case PitchType.Curve:
-                if (Vector3.Dot(transform.forward, _direction) > 0)
-                {
-                    rb.angularVelocity = transform.right * 30f;
-                }
-                else
-                {
-                    rb.angularVelocity = transform.right * -30f;
-                }
-                break;
+                Vector3 cross = Vector3.Cross(transform.forward, _direction);
+                float side = Vector3.Dot(cross, Vector3.up); // 좌/우 판별
+
+                float directionSign = Mathf.Sign(side); // +1 또는 -1
+
+                float verticalFlip = Mathf.Sign(_direction.y); // 위로 던지면 +1, 아래면 -1
+                Vector3 spinAxis = transform.up;
+
+                // X축 기준 플립
+                if (verticalFlip < 0)
+                    spinAxis = Vector3.Reflect(spinAxis, transform.right);
+
+                float baseSpin = 3f;
+                float forceFactor = Mathf.InverseLerp(10f, 25f, _force); 
+                float finalSpin = Mathf.Lerp(1f, 8f, forceFactor); 
+
+                rb.angularVelocity = spinAxis * directionSign * -finalSpin; break;
         }
     }
 
@@ -84,19 +93,12 @@ public class Ball : MonoBehaviour
         }
 
         rb.linearVelocity *= (1f - _resistance * Time.fixedDeltaTime);
+        Debug.DrawRay(transform.position, rb.linearVelocity, Color.green, 0.1f);
+
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Ground"))
-        {
-            // 공이 땅에 닿았을 때의 처리
-            rb.velocity = Vector3.zero; // 속도를 0으로 초기화
-            rb.angularVelocity = Vector3.zero; // 회전 속도를 0으로 초기화
-            Destroy(gameObject, 2f); // 2초 후에 공 제거
-        }
+        Debug.Log("충돌햇음");
     }
-}
-
-
 }
