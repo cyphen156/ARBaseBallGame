@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6968740068266064303}
   - component: {fileID: 4592383692820825399}
+  - component: {fileID: 4324596815386631697}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -51,3 +52,19 @@ MonoBehaviour:
   currentPitchType: 0
   minForce: 10
   maxForce: 25
+--- !u!114 &4324596815386631697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6763837534451679666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023a1f4916edb7146abdf79b4cbe1f7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseballGamePrefab: {fileID: 1713698342034425954, guid: 07be6a7be362b314ba3891e8ed5cb530,
+    type: 3}
+  _arRaycastManager: {fileID: 0}
+  isCreated: 0
