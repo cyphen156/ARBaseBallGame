@@ -1,20 +1,27 @@
 using UnityEngine;
 
+
+/// <summary>
+/// 마그누스 효과 구현하기
+/// 공의 물리적 특성을 제어하는 컴포넌트입니다.
+/// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class Ball : MonoBehaviour
 {
     public Rigidbody rb;
 
-    private float _speed = 80f;
-    private Vector3 _direction;
+    [Header("Pitch Settings")]
+    [SerializeField] private float _lifetime = 15f;
+    [SerializeField] private float _resistance = 0.1f;
+    [SerializeField] private float magnusStrength = 5f;
+
     private Vector3 _startPosition;
-    private Vector3 _targetPosition = new Vector3(0, 1, 1);
-    private Vector3 _startPositionOffSet = new Vector3(0, 0f, 5f);
-    private float _force = 5f;
-    private float _lifetime = 3f;
-    private float _resistance = 0.1f;
-    private float _velocity;
+    private Vector3 _direction;
+    private float _force;
+    private float _startTime;
     private PitchType _pitchType;
+
+    private Vector3 _startPositionOffSet = new Vector3(0, 0f, 5f);
 
     private void Awake()
     {
@@ -24,6 +31,7 @@ public class Ball : MonoBehaviour
 
     private void Start()
     {
+        _startTime = Time.time;
         Destroy(gameObject, _lifetime);
     }
 
@@ -49,7 +57,14 @@ public class Ball : MonoBehaviour
                 rb.angularVelocity = transform.right * -30f; // Backspin
                 break;
             case PitchType.Curve:
-                rb.angularVelocity = transform.right * 30f; // Topspin
+                if (Vector3.Dot(transform.forward, _direction) > 0)
+                {
+                    rb.angularVelocity = transform.right * 30f;
+                }
+                else
+                {
+                    rb.angularVelocity = transform.right * -30f;
+                }
                 break;
         }
     }
@@ -58,10 +73,30 @@ public class Ball : MonoBehaviour
     {
         if (_pitchType == PitchType.Curve)
         {
-            Vector3 curveForce = Vector3.right * Mathf.Sin(Time.time * 6f) * 2f;
-            rb.AddForce(curveForce, ForceMode.Acceleration);
+            Vector3 w = rb.angularVelocity;
+            Vector3 v = rb.linearVelocity;
+
+            if (w != Vector3.zero && v != Vector3.zero)
+            {
+                Vector3 magnusForce = Vector3.Cross(w, v).normalized * magnusStrength;
+                rb.AddForce(magnusForce, ForceMode.Acceleration);
+            }
         }
 
         rb.linearVelocity *= (1f - _resistance * Time.fixedDeltaTime);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Ground"))
+        {
+            // 공이 땅에 닿았을 때의 처리
+            rb.velocity = Vector3.zero; // 속도를 0으로 초기화
+            rb.angularVelocity = Vector3.zero; // 회전 속도를 0으로 초기화
+            Destroy(gameObject, 2f); // 2초 후에 공 제거
+        }
+    }
+}
+
+
 }
