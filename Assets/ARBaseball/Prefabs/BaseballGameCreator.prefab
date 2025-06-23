@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 023a1f4916edb7146abdf79b4cbe1f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseballGamePrefab: {fileID: 1116110686124796508, guid: 0180ac3ae8f931c428ca2853d8cb8925,
+  baseballGamePrefab: {fileID: 5367551848905439448, guid: 07be6a7be362b314ba3891e8ed5cb530,
     type: 3}
   _arRaycastManager: {fileID: 0}
   isCreated: 0
