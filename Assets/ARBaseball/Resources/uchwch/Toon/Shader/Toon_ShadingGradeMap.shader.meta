@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ca035891872022e4f80c952b3916e450
+timeCreated: 1485041920
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 201952
+  packageName: SD chan Home run derby Animation
+  packageVersion: 1.0
+  assetPath: Assets/uchwch/Toon/Shader/Toon_ShadingGradeMap.shader
+  uploadId: 465891

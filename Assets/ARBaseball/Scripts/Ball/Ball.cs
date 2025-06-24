@@ -101,4 +101,9 @@ public class Ball : MonoBehaviour
     {
         Debug.Log("충돌햇음");
     }
+
+    public void Reflect()
+    {
+
+    }
 }

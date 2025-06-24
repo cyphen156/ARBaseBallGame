@@ -10,13 +10,13 @@
 public class Bat : MonoBehaviour
 {
     private Rigidbody rb;
-    private Collider[] batColliders;
+    public Collider[] batColliders; // 혹시 몰라서 인스펙터 열었음
     
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false; // 배트는 중력을 사용하지 않도록 설정
-        batColliders = GetComponentsInChildren<Collider>();
+        batColliders = GetComponentsInChildren<Collider>(); // 캡슐 콜라이더 전부 가져옴
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -24,13 +24,23 @@ public class Bat : MonoBehaviour
         // 공과 충돌 시, 공에게 배트의 힘을 전달
         if (collision.gameObject.CompareTag("Ball"))
         {
-            Rigidbody ballRb = collision.gameObject.GetComponent<Rigidbody>();
-            if (ballRb != null)
+            collision.gameObject.TryGetComponent<Ball>(out Ball ball);
+
+            if ( ball == null)
             {
-                Vector3 contactPoint = collision.contacts[0].point;
-                Vector3 direction = (contactPoint - transform.position).normalized;
-                float force = rb.linearVelocity.magnitude; // 배트의 속도를 힘으로 사용
-                ballRb.AddForce(direction * force, ForceMode.Impulse);
+                return;
+            }
+            Collider hitCollider = collision.contacts[0].thisCollider;
+
+            for (int i = 0; i < batColliders.Length; ++i)
+            {
+                if (hitCollider == batColliders[i])
+                {
+                    float t = i / (float)(batColliders.Length - 1);
+
+                    ball.Reflect();
+                    break;
+                }
             }
         }
     }
@@ -45,4 +55,5 @@ public class Bat : MonoBehaviour
     {
         rb.linearVelocity = Vector3.zero; // 배트의 속도를 초기화
     }
+
 }
