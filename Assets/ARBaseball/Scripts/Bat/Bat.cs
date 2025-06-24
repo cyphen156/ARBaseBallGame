@@ -6,16 +6,16 @@
 /// 배트의 움직임을 제어합니다.
 /// 공과의 충돌을 감지하고 공에게 배트 힘을 전달합니다.
 /// </summary>
-[RequireComponent(typeof(Rigidbody))]
 public class Bat : MonoBehaviour
 {
-    private Rigidbody rb;
     public Collider[] batColliders; // 혹시 몰라서 인스펙터 열었음
+
+    private Vector3 _direction = Vector3.forward;
+    private float _force = 10f;
+
     
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.useGravity = false; // 배트는 중력을 사용하지 않도록 설정
         batColliders = GetComponentsInChildren<Collider>(); // 캡슐 콜라이더 전부 가져옴
     }
 
@@ -30,6 +30,7 @@ public class Bat : MonoBehaviour
             {
                 return;
             }
+
             Collider hitCollider = collision.contacts[0].thisCollider;
 
             for (int i = 0; i < batColliders.Length; ++i)
@@ -37,8 +38,11 @@ public class Bat : MonoBehaviour
                 if (hitCollider == batColliders[i])
                 {
                     float t = i / (float)(batColliders.Length - 1);
+                    float multiplier = Mathf.Lerp(0.3f, 1f, t);  // 배트 회전에 의한 가중치 0.3 ~ 1
+                    ball.Reflect(_direction, _force * multiplier);
+                    Debug.Log("반사");
+                    GameManager.Instance.RequestHitSequence();
 
-                    ball.Reflect();
                     break;
                 }
             }
@@ -48,12 +52,14 @@ public class Bat : MonoBehaviour
     public void Swing(Vector3 direction, float force)
     {
         // 배트의 스윙 방향과 힘을 적용
-        rb.AddForce(direction * force, ForceMode.Impulse);
+        _direction = direction;
+        _force = force;
     }
 
-    public void ResetRB()
+    public void ResetBat()
     {
-        rb.linearVelocity = Vector3.zero; // 배트의 속도를 초기화
+        _direction = Vector3.zero;
+        _force = 0;
     }
 
 }

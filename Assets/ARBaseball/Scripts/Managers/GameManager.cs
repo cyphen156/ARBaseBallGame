@@ -268,8 +268,12 @@ public class GameManager : MonoBehaviour
             }
             else if (currentPlayMode == PlayMode.BatterMode)
             {
-
+                
             }
         }
+    }
+    public void RequestHitSequence()
+    {
+
     }
 }

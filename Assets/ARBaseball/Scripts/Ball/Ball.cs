@@ -102,8 +102,8 @@ public class Ball : MonoBehaviour
         Debug.Log("충돌햇음");
     }
 
-    public void Reflect()
+    public void Reflect(Vector3 direction, float force)
     {
-
+        Debug.Log("반사 2");
     }
 }
