@@ -41,6 +41,7 @@ public class BaseballGameCreator : MonoBehaviour
             Vector3 spawnPosition = hitResults[0].pose.position;
 
             GameObject baseballGameObject = Instantiate(baseballGamePrefab, spawnPosition, Quaternion.identity);
+            baseballGameObject.name = "BaseballField";
             Vector3 direction = baseballGameObject.transform.position - _xrOrigin.Camera.transform.position;
             baseballGameObject.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
             isCreated = true;
