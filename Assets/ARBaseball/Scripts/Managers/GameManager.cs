@@ -10,8 +10,11 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    public GameObject ballPrefab;  // 공 프리팹
-    private BaseballGameCreator baseballGameCreator;  // 야구 게임 생성기 
+    public GameObject ballPrefab;                       // 공 프리팹
+    public GameObject batterPrefab;                     // 타자 프리팹
+    public GameObject pitcherPrefab;                    // 투수 프리팹
+    private BaseballGameCreator baseballGameCreator;    // 야구 게임 생성기 
+
     /// <summary>
     /// todos : 
     /// 1. 플레이어 입력에 따라 게임 상태를 업데이트합니다.
@@ -21,10 +24,18 @@ public class GameManager : MonoBehaviour
     /// </summary>
     [Header("GameState")]
     public static GameManager Instance { get; private set; }
-    [SerializeField] private GameState currentGameState;  // 현재 게임 상태
+    [SerializeField] private GameState currentGameState;// 현재 게임 상태
     [SerializeField] private PlayMode currentPlayMode;  // 플레이 모드 선택 여부
     [SerializeField] private PitchType currentPitchType;
-    
+
+    [Header("플레이어블 인스턴스 관련 헤더")]
+    [SerializeField] private GameObject playerGameObject;
+    [SerializeField] private GameObject aIGameObject;
+    [SerializeField] private GameObject bat;
+    private Transform pitcherPosition;
+    private Transform batterPosition;
+    private Vector3 cameraOffset = new Vector3(0, 0, -5);
+
     public event Action<GameState> OnGameStateChanged;
     public event Action<PlayMode> OnPlayModeChanged;
     public event Action<int> OnRestTimeChanged;
@@ -136,6 +147,9 @@ public class GameManager : MonoBehaviour
         // 로직 1
         // AR을 통해 플레이어와 AI의 위치를 설정하는 로직을 여기에 작성합니다.
         yield return new WaitUntil(()=> baseballGameCreator.isCreated);
+        // 캐릭터 생성 좌표 초기화
+        pitcherPosition = GameObject.Find("PitcherPosition").transform;
+        batterPosition = GameObject.Find("BatterPosition").transform;
         Debug.Log("AR BaseballGameSetUP Complete");
         UIManager.Instance.RequestUpdateUIForInitComplete(1);
 
@@ -159,10 +173,34 @@ public class GameManager : MonoBehaviour
             return; // 현재 상태와 동일하면 변경하지 않음
         }
         currentGameState = newGameState;
-        if (currentGameState == GameState.Play && currentPlayMode == PlayMode.PitcherMode)
+
+        if (currentGameState == GameState.Play)
         {
-            ResetRestTime(); // 게임이 시작되면 타이머를 초기화합니다.
+            // 캐릭터를 생성하고
+            SpawnCharacters();
+
+            // 플레이 모드에 따라위치를 옮긴 다음 서로 마주보게 해야함
+            if (currentPlayMode == PlayMode.PitcherMode)
+            {
+                playerGameObject.transform.position = pitcherPosition.position;
+                playerGameObject.transform.rotation = pitcherPosition.rotation;
+                aIGameObject.transform.position = batterPosition.position;
+                aIGameObject.transform.rotation = batterPosition.rotation;
+                ResetRestTime(); // 게임이 시작되면 타이머를 초기화합니다.
+            }
+            else if (currentPlayMode == PlayMode.BatterMode)
+            {
+                playerGameObject.transform.position = batterPosition.position;
+                playerGameObject.transform.rotation = batterPosition.rotation;
+                aIGameObject.transform.position = pitcherPosition.position;
+                aIGameObject.transform.rotation = pitcherPosition.rotation;
+            }
+
+            GameObject baseballField = GameObject.Find("BaseballField");
+            playerGameObject.transform.SetParent(baseballField.transform);
+            aIGameObject.transform.SetParent(baseballField.transform);
         }
+        
         Debug.Log("게임 상태가 변경되었습니다: " + currentGameState);
         OnGameStateChanged?.Invoke(currentGameState);
     }
@@ -179,6 +217,18 @@ public class GameManager : MonoBehaviour
         }
 
         currentPlayMode = newMode;
+        if (currentPlayMode == PlayMode.PitcherMode)
+        {
+            playerGameObject = pitcherPrefab;
+            aIGameObject = batterPrefab;
+        }
+        else if (currentPlayMode == PlayMode.BatterMode)
+        {
+            playerGameObject = batterPrefab;
+            aIGameObject = pitcherPrefab;
+            bat = GameObject.Find("Bat");
+        }
+
         Debug.Log("플레이 모드가 변경되었습니다: " + currentPlayMode);
         OnPlayModeChanged?.Invoke(currentPlayMode);
         ChangeGameState(GameState.Ready); // 플레이 모드가 변경되면 게임 상태를 Ready로 변경합니다.
@@ -194,6 +244,19 @@ public class GameManager : MonoBehaviour
         currentPitchType = newType;
         Debug.Log("피칭 모드가 변경되었습니다: " + currentPitchType);
     }
+
+    /// <summary>
+    /// 게임 상태가 Play가 되었을 때 호출될 함수
+    /// 게임 모드에 따라 플레이어 또는 AI를 각기 할당된 포지션에 생성함
+    /// </summary>
+    private void SpawnCharacters()
+    {
+        playerGameObject = Instantiate(playerGameObject);
+        aIGameObject = Instantiate(aIGameObject);
+        playerGameObject.name = "Player";
+        aIGameObject.name = "AI";
+    }
+
     private void ResetRestTime()
     {
         currentRestTime = defaultRestTime;
@@ -263,17 +326,38 @@ public class GameManager : MonoBehaviour
 
             if (currentPlayMode == PlayMode.PitcherMode)
             {
-                GameObject go = Instantiate(ballPrefab, spawnPosition, Quaternion.identity);
+                GameObject go = Instantiate(ballPrefab, spawnPosition, Camera.main.transform.rotation);
                 go.GetComponent<Ball>().Shoot(spawnPosition, direction, force, currentPitchType);
             }
             else if (currentPlayMode == PlayMode.BatterMode)
             {
-                
+                if (bat == null)
+                {
+                    Debug.LogWarning("[GameManager] Player에 Bat 컴포넌트가 없습니다.");
+                    return;
+                }
+
+                bat.GetComponent<Bat>().Swing(direction, force);
+                Debug.Log("배트를 휘둘럿다!");
             }
         }
     }
-    public void RequestHitSequence()
+
+    /// <summary>
+    /// 공이 배트에 맞았을 때 재생되는 거
+    /// 1, 게임을 멈춤
+    /// 2. 카메라를 배트와 공이 맞은 것을 볼 수 있도록 위치 이동
+    /// 3. 0.4초 뒤에 게임을 다시 재생
+    /// 4. 0.6초 동안 공이 날아가는 것을 카메라가 트래킹
+    /// 5. 이 후 다시 카메라가 원래 위치로 복귀
+    /// </summary>
+    private void PlayHitSequence()
     {
 
+    }
+
+    public void OnBallHit()
+    {
+        PlayHitSequence();
     }
 }

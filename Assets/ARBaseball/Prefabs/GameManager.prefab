@@ -47,9 +47,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballPrefab: {fileID: 4585120859569798489, guid: bcc04db75cc3a254a86babef5bc124c8,
     type: 3}
+  batterPrefab: {fileID: 2741278267292095249, guid: d3118736dff13c842985a1b36bb959af,
+    type: 3}
+  pitcherPrefab: {fileID: 6672679508411973926, guid: 31b53368d24455841bde4fb0ec3c6242,
+    type: 3}
   currentGameState: 0
   currentPlayMode: 0
   currentPitchType: 0
+  playerGameObject: {fileID: 0}
+  aIGameObject: {fileID: 0}
   minForce: 10
   maxForce: 25
 --- !u!114 &4324596815386631697
@@ -67,4 +73,6 @@ MonoBehaviour:
   baseballGamePrefab: {fileID: 1713698342034425954, guid: 07be6a7be362b314ba3891e8ed5cb530,
     type: 3}
   _arRaycastManager: {fileID: 0}
+  _arPlaneManager: {fileID: 0}
+  _xrOrigin: {fileID: 0}
   isCreated: 0

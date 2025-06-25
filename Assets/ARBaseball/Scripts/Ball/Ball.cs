@@ -3,8 +3,8 @@ using UnityEngine;
 
 
 /// <summary>
-/// ¸¶±×´©½º È¿°ú ±¸ÇöÇÏ±â
-/// °øÀÇ ¹°¸®Àû Æ¯¼ºÀ» Á¦¾îÇÏ´Â ÄÄÆ÷³ÍÆ®ÀÔ´Ï´Ù.
+/// ë§ˆê·¸ëˆ„ìŠ¤ íš¨ê³¼ êµ¬í˜„í•˜ê¸°
+/// ê³µì˜ ë¬¼ë¦¬ì  íŠ¹ì„±ì„ ì œì–´í•˜ëŠ” ì»´í¬ë„ŒíŠ¸ì…ë‹ˆë‹¤.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class Ball : MonoBehaviour
@@ -21,11 +21,13 @@ public class Ball : MonoBehaviour
     private float _force;
     private float _startTime;
     private PitchType _pitchType;
+    private Vector3 _defalutGravity = new Vector3(0, -9.81f * 0.3f, 0);
+    private Vector3 _flippedGravity = new Vector3(0, -9.81f * -0.2f, 0);
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        Physics.gravity = new Vector3(0, -9.81f * 0.3f, 0);    // Áß·Â°ª º¸Á¤
+        Physics.gravity = _defalutGravity;   // ì¤‘ë ¥ê°’ ë³´ì •
     }
 
     private void Start()
@@ -57,22 +59,27 @@ public class Ball : MonoBehaviour
                 break;
             case PitchType.Curve:
                 Vector3 cross = Vector3.Cross(transform.forward, _direction);
-                float side = Vector3.Dot(cross, Vector3.up); // ÁÂ/¿ì ÆÇº°
+                float side = Vector3.Dot(cross, Vector3.up); // ì¢Œ/ìš° íŒë³„
 
-                float directionSign = Mathf.Sign(side); // +1 ¶Ç´Â -1
+                float directionSign = Mathf.Sign(side); // +1ì´ë©´ Curve Left, -1ì´ë©´ Curve Right
 
-                float verticalFlip = Mathf.Sign(_direction.y); // À§·Î ´øÁö¸é +1, ¾Æ·¡¸é -1
+                float verticalFlip = Mathf.Sign(_direction.y); // ìœ„ë¡œ ë˜ì§€ë©´ +1, ì•„ë˜ë©´ -1
                 Vector3 spinAxis = transform.up;
 
-                // XÃà ±âÁØ ÇÃ¸³
+                // ë§Œì•½ ì•„ë˜ë¡œ ë˜ì¡Œë‹¤ë©´
+                // Xì¶• ê¸°ì¤€ í”Œë¦½
                 if (verticalFlip < 0)
+                {
                     spinAxis = Vector3.Reflect(spinAxis, transform.right);
+                    // ì¤‘ë ¥ê°’ ë³´ì • ìƒˆë¡œ ì ìš©
+                    Physics.gravity = _flippedGravity;
+                }
 
-                float baseSpin = 3f;
                 float forceFactor = Mathf.InverseLerp(10f, 25f, _force); 
                 float finalSpin = Mathf.Lerp(1f, 8f, forceFactor); 
 
-                rb.angularVelocity = spinAxis * directionSign * -finalSpin; break;
+                rb.angularVelocity = spinAxis * directionSign * -finalSpin;
+                break;
         }
     }
 
@@ -97,11 +104,20 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Ãæµ¹ÇŞÀ½");
+        Debug.Log("ì¶©ëŒí–‡ìŒ");
     }
 
     public void Reflect(Vector3 direction, float force)
     {
-        Debug.Log("¹İ»ç 2");
+        Vector3 incoming = rb.linearVelocity;
+        Vector3 reflectDirection = Vector3.Reflect(incoming.normalized, direction.normalized);
+
+        float finalSpeed = Mathf.Clamp(force + incoming.magnitude, 0f, 80f);
+        rb.linearVelocity = reflectDirection * finalSpeed;
+
+        Physics.gravity = _defalutGravity;
+        
+        Debug.Log($"[Ball] ë°˜ì‚¬ë¨1: ë°°íŠ¸ë°©í–¥ {direction}, ì „ë‹¬ëœ í˜ {force}");
+        Debug.Log($"[Ball] ë°˜ì‚¬ë¨2: ë°©í–¥ {reflectDirection}, ì†ë„ {finalSpeed}");
     }
 }

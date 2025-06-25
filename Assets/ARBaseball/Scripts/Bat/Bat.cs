@@ -12,11 +12,26 @@ public class Bat : MonoBehaviour
 
     private Vector3 _direction = Vector3.forward;
     private float _force = 10f;
+    private bool _isSwinging = false;
+    private float _acceleration = 0f;
 
-    
     private void Awake()
     {
         batColliders = GetComponentsInChildren<Collider>(); // 캡슐 콜라이더 전부 가져옴
+    }
+
+    private void Update()
+    {
+        if (_isSwinging)
+        {
+            _acceleration += Time.deltaTime;
+        }
+
+        // 혹시 모르는 함수 호출 에러를 방지하는 초기화 함수
+        if (_acceleration > 2f)
+        {
+            ResetBat();
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -26,22 +41,21 @@ public class Bat : MonoBehaviour
         {
             collision.gameObject.TryGetComponent<Ball>(out Ball ball);
 
-            if ( ball == null)
+            if (ball == null)
             {
                 return;
             }
 
             Collider hitCollider = collision.contacts[0].thisCollider;
-
             for (int i = 0; i < batColliders.Length; ++i)
             {
                 if (hitCollider == batColliders[i])
                 {
                     float t = i / (float)(batColliders.Length - 1);
-                    float multiplier = Mathf.Lerp(0.3f, 1f, t);  // 배트 회전에 의한 가중치 0.3 ~ 1
-                    ball.Reflect(_direction, _force * multiplier);
-                    Debug.Log("반사");
-                    GameManager.Instance.RequestHitSequence();
+                    float multiplier = Mathf.Lerp(0.3f, 1.3f, t);  // 배트 회전에 의한 가중치 0.3 ~ 1
+                    Debug.Log($"맞은 콜라이더 번호 : {i} + 반사");
+                    ball.Reflect(_direction, _force * multiplier * _acceleration);
+                    GameManager.Instance.OnBallHit();
 
                     break;
                 }
@@ -54,12 +68,14 @@ public class Bat : MonoBehaviour
         // 배트의 스윙 방향과 힘을 적용
         _direction = direction;
         _force = force;
+        _isSwinging = true;
     }
 
     public void ResetBat()
     {
         _direction = Vector3.zero;
         _force = 0;
+        _isSwinging = false;
+        _acceleration = 0f;
     }
-
 }
