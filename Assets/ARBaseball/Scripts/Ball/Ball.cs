@@ -22,8 +22,6 @@ public class Ball : MonoBehaviour
     private float _startTime;
     private PitchType _pitchType;
 
-    private Vector3 _startPositionOffSet = new Vector3(0, 0f, 5f);
-
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -38,7 +36,7 @@ public class Ball : MonoBehaviour
 
     public void Shoot(Vector3 startPosition, Vector3 direction, float force, PitchType type)
     {
-        _startPosition = startPosition + _startPositionOffSet;
+        _startPosition = startPosition;
         _direction = direction.normalized;
         _force = force;
         _pitchType = type;

@@ -23,7 +23,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: -5439198818422664828, guid: 27ea8d04a78ea6744b8d97e29c9eee80,
+    m_Reference: {fileID: -5439198818422664828, guid: 9d4ca9e5e7a3cce46acea85dce9b87e3,
       type: 3}
   m_ScreenTapPosition:
     m_UseReference: 1
@@ -36,7 +36,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: -6292835978202079323, guid: 27ea8d04a78ea6744b8d97e29c9eee80,
+    m_Reference: {fileID: -6292835978202079323, guid: 9d4ca9e5e7a3cce46acea85dce9b87e3,
       type: 3}
   m_LeftTriggerPressed:
     m_UseReference: 1

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
@@ -13,6 +14,9 @@ public class BaseballGameCreator : MonoBehaviour
     [SerializeField]
     private ARRaycastManager _arRaycastManager;
     [SerializeField]
+    private ARPlaneManager _arPlaneManager;
+    [SerializeField]
+    private XROrigin _xrOrigin;
 
     public bool isCreated = false;
 
@@ -27,7 +31,7 @@ public class BaseballGameCreator : MonoBehaviour
 
         Debug.Log($"Touch : {touchPosition}");
 
-        Ray ray = Camera.main.ScreenPointToRay(touchPosition);
+        Ray ray = _xrOrigin.Camera.ScreenPointToRay(touchPosition);
         List<ARRaycastHit> hitResults = new List<ARRaycastHit>();
 
         _arRaycastManager.Raycast(ray, hitResults);
@@ -36,14 +40,13 @@ public class BaseballGameCreator : MonoBehaviour
         {
             Vector3 spawnPosition = hitResults[0].pose.position;
 
-            Vector3 direction = Camera.main.transform.position - spawnPosition;
-            direction.y = 0; // 평면 위에 생성되도록 Y 좌표를 0으로 설정
-            direction += new Vector3(0, 0.1f, 0); // 약간 위로 올려서 생성
-
-            GameObject baseballGameObject = Instantiate(baseballGamePrefab, spawnPosition, Quaternion.Euler(direction));
-            //Vector3 direction = Camera.main.transform.position - baseballGameObject.transform.position;
-            //baseballGameObject.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            GameObject baseballGameObject = Instantiate(baseballGamePrefab, spawnPosition, Quaternion.identity);
+            Vector3 direction = baseballGameObject.transform.position - _xrOrigin.Camera.transform.position;
+            baseballGameObject.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
             isCreated = true;
+
+            _arPlaneManager.SetTrackablesActive(false);
+            _arPlaneManager.enabled = false;
         }
     }
 }
