@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 6763837534451679666}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 739.3626, y: 844.9524, z: 150.25987}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -56,6 +56,8 @@ MonoBehaviour:
   currentPitchType: 0
   playerGameObject: {fileID: 0}
   aIGameObject: {fileID: 0}
+  bat: {fileID: 0}
+  cameraOffset: {x: 2.5, y: 2.5, z: -15}
   minForce: 10
   maxForce: 25
 --- !u!114 &4324596815386631697

@@ -1,7 +1,11 @@
 using System;
 using System.Collections;
+using Unity.XR.CoreUtils;
+using UnityEditor.XR.LegacyInputHelpers;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// 게임의 전반적인 상태를 관리합니다.
@@ -14,6 +18,7 @@ public class GameManager : MonoBehaviour
     public GameObject batterPrefab;                     // 타자 프리팹
     public GameObject pitcherPrefab;                    // 투수 프리팹
     private BaseballGameCreator baseballGameCreator;    // 야구 게임 생성기 
+    private GameObject simulationCamera;                    // SimulationCamera
 
     /// <summary>
     /// todos : 
@@ -32,9 +37,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private GameObject aIGameObject;
     [SerializeField] private GameObject bat;
-    private Transform pitcherPosition;
-    private Transform batterPosition;
-    private Vector3 cameraOffset = new Vector3(0, 0, -5);
+    [SerializeField] private GameObject baseballField;
+    [SerializeField] private Transform targetTransform;
+    [SerializeField] private Transform cameraTransform;
+
+    [SerializeField] private Transform pitcherPosition;
+    [SerializeField] private Transform batterPosition;
+    [SerializeField] private Vector3 defaultPitcherPosition;
+
+    private Vector3 cameraOffset;
+    private Vector3 pitchOffset = new Vector3(-5f, -5f, 40f); 
+    private Vector3 batOffset = new Vector3(10f, 0f, -40f); 
+
 
     public event Action<GameState> OnGameStateChanged;
     public event Action<PlayMode> OnPlayModeChanged;
@@ -44,6 +58,7 @@ public class GameManager : MonoBehaviour
     private float elapsedTime = 0f;
     public float minForce = 10f;
     public float maxForce = 25f;
+    private Vector3 pitchAnimationCameraPosition;
 
     private void Awake()
     {
@@ -100,6 +115,7 @@ public class GameManager : MonoBehaviour
                             if (currentRestTime < 0)
                             {
                                 // 타이머가 0 이하로 내려가면 다음 턴으로 넘어갑니다.
+
                             }
                             OnRestTimeChanged?.Invoke((int)currentRestTime);
                         }
@@ -147,6 +163,8 @@ public class GameManager : MonoBehaviour
         // 로직 1
         // AR을 통해 플레이어와 AI의 위치를 설정하는 로직을 여기에 작성합니다.
         yield return new WaitUntil(()=> baseballGameCreator.isCreated);
+        simulationCamera = GameObject.Find("SimulationCamera");
+
         // 캐릭터 생성 좌표 초기화
         pitcherPosition = GameObject.Find("PitcherPosition").transform;
         batterPosition = GameObject.Find("BatterPosition").transform;
@@ -179,6 +197,12 @@ public class GameManager : MonoBehaviour
             // 캐릭터를 생성하고
             SpawnCharacters();
 
+            // 카메라의 현재 위치 캐싱
+            cameraTransform = simulationCamera.transform;
+
+            baseballField = GameObject.Find("BaseballField");
+
+            targetTransform = simulationCamera.transform;
             // 플레이 모드에 따라위치를 옮긴 다음 서로 마주보게 해야함
             if (currentPlayMode == PlayMode.PitcherMode)
             {
@@ -186,6 +210,9 @@ public class GameManager : MonoBehaviour
                 playerGameObject.transform.rotation = pitcherPosition.rotation;
                 aIGameObject.transform.position = batterPosition.position;
                 aIGameObject.transform.rotation = batterPosition.rotation;
+                defaultPitcherPosition = new Vector3(pitcherPosition.position.x, 0, pitcherPosition.position.z);
+                targetTransform = pitcherPosition;
+                cameraOffset = pitchOffset;
                 ResetRestTime(); // 게임이 시작되면 타이머를 초기화합니다.
             }
             else if (currentPlayMode == PlayMode.BatterMode)
@@ -193,14 +220,32 @@ public class GameManager : MonoBehaviour
                 playerGameObject.transform.position = batterPosition.position;
                 playerGameObject.transform.rotation = batterPosition.rotation;
                 aIGameObject.transform.position = pitcherPosition.position;
-                aIGameObject.transform.rotation = pitcherPosition.rotation;
+                targetTransform = batterPosition;
+                cameraOffset = batOffset;
+                bat = GameObject.Find("Bat");
             }
 
-            GameObject baseballField = GameObject.Find("BaseballField");
             playerGameObject.transform.SetParent(baseballField.transform);
             aIGameObject.transform.SetParent(baseballField.transform);
+
+            // 회전 변환 먼저 (M = TRS)
+            baseballField.transform.rotation = Quaternion.LookRotation(targetTransform.forward, Vector3.up);
+
+            // 이동 변환 후처리
+            Vector3 newPosition = cameraTransform.position - targetTransform.position + baseballField.transform.rotation * cameraOffset;
+            newPosition.y = cameraOffset.y;
+
+            if (currentPlayMode == PlayMode.PitcherMode)
+            {
+                pitchAnimationCameraPosition = newPosition;
+                newPosition = defaultPitcherPosition;
+                playerGameObject.SetActive(false);
+                aIGameObject .SetActive(false);
+            }
+
+            baseballField.transform.position = newPosition;
         }
-        
+
         Debug.Log("게임 상태가 변경되었습니다: " + currentGameState);
         OnGameStateChanged?.Invoke(currentGameState);
     }
@@ -226,7 +271,6 @@ public class GameManager : MonoBehaviour
         {
             playerGameObject = batterPrefab;
             aIGameObject = pitcherPrefab;
-            bat = GameObject.Find("Bat");
         }
 
         Debug.Log("플레이 모드가 변경되었습니다: " + currentPlayMode);
@@ -312,8 +356,8 @@ public class GameManager : MonoBehaviour
             Vector2 drag = EndPosition - StartPosition;
             float force = Mathf.Clamp((float)elapsedDraggingTime * 10f, minForce, maxForce);
 
-            Vector3 spawnPosition = Camera.main.transform.position + Camera.main.transform.forward * 0.5f;
-            Vector3 baseDirection = Camera.main.transform.forward;
+            Vector3 spawnPosition = cameraTransform.position + cameraTransform.forward * 0.5f;
+            Vector3 baseDirection = cameraTransform.forward;
 
             float screenRatio = (float)Screen.height / Screen.width;
 
@@ -321,13 +365,12 @@ public class GameManager : MonoBehaviour
             float verticalOffset = Mathf.Clamp((drag.y / Screen.height) * screenRatio, -0.3f, 0.3f);
 
             Vector3 direction = (baseDirection
-                                + Camera.main.transform.right * horizontalOffset
-                                + Camera.main.transform.up * verticalOffset).normalized;
+                                + cameraTransform.right * horizontalOffset
+                                + cameraTransform.up * verticalOffset).normalized;
 
             if (currentPlayMode == PlayMode.PitcherMode)
             {
-                GameObject go = Instantiate(ballPrefab, spawnPosition, Camera.main.transform.rotation);
-                go.GetComponent<Ball>().Shoot(spawnPosition, direction, force, currentPitchType);
+                StartCoroutine(C_Shoot(spawnPosition, direction, force));
             }
             else if (currentPlayMode == PlayMode.BatterMode)
             {
@@ -338,9 +381,31 @@ public class GameManager : MonoBehaviour
                 }
 
                 bat.GetComponent<Bat>().Swing(direction, force);
+                playerGameObject.GetComponent<AnimationContoller>().PlayAnimation("Swing");
                 Debug.Log("배트를 휘둘럿다!");
             }
         }
+    }
+
+    private IEnumerator C_Shoot(Vector3 spawnPosition, Vector3 direction, float force)
+    {
+        playerGameObject.SetActive(true);
+        baseballField.transform.position = pitchAnimationCameraPosition;
+
+        Animator animator = playerGameObject.GetComponent<Animator>();
+        animator.SetTrigger("Shoot");
+
+        // 애니메이션 대기 - 클립 길이를 아는 경우
+        float shootAnimDuration = animator.GetCurrentAnimatorStateInfo(0).length;
+        yield return new WaitForSeconds(shootAnimDuration);
+
+        // 필드 원위치 복귀
+        baseballField.transform.position = defaultPitcherPosition;
+        playerGameObject.SetActive(false);
+
+        // 공 던지기
+        GameObject go = Instantiate(ballPrefab, spawnPosition, cameraTransform.rotation);
+        go.GetComponent<Ball>().Shoot(spawnPosition, direction, force, currentPitchType);
     }
 
     /// <summary>

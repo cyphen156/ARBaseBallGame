@@ -14,10 +14,12 @@ public class Bat : MonoBehaviour
     private float _force = 10f;
     private bool _isSwinging = false;
     private float _acceleration = 0f;
+    private Quaternion _defaultLocalRotation;
 
     private void Awake()
     {
         batColliders = GetComponentsInChildren<Collider>(); // 캡슐 콜라이더 전부 가져옴
+        _defaultLocalRotation = transform.localRotation;
     }
 
     private void Update()
@@ -69,6 +71,12 @@ public class Bat : MonoBehaviour
         _direction = direction;
         _force = force;
         _isSwinging = true;
+
+        float rotationX = Mathf.Clamp(_direction.y * 100, -22.5f, 22.5f);
+        Debug.Log(_direction);
+        Debug.Log(rotationX);
+        transform.localRotation *= Quaternion.Euler(-rotationX, 0, 0); 
+        Debug.Log(transform.localRotation);
     }
 
     public void ResetBat()
@@ -77,5 +85,6 @@ public class Bat : MonoBehaviour
         _force = 0;
         _isSwinging = false;
         _acceleration = 0f;
+        transform.localRotation = _defaultLocalRotation;
     }
 }
