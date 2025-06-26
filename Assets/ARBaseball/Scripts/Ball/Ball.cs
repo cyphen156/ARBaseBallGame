@@ -1,3 +1,4 @@
+using Mono.Cecil.Cil;
 using System.Data.Common;
 using UnityEngine;
 
@@ -56,6 +57,7 @@ public class Ball : MonoBehaviour
         {
             case PitchType.Fastball:
                 rb.angularVelocity = transform.right * -30f; // Backspin
+                rb.useGravity = false;
                 break;
             case PitchType.Curve:
                 Vector3 cross = Vector3.Cross(transform.forward, _direction);
@@ -104,11 +106,47 @@ public class Ball : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("충돌햇음");
+        TurnResult turnResult = TurnResult.Ball;
+
+        LayerMask layer = other.gameObject.layer;
+        PlayMode pMod = GameManager.Instance.GetPlayMode();
+
+        if (pMod == PlayMode.PitcherMode)
+        {
+            if (layer == 14)
+            {
+                turnResult = TurnResult.Strike;
+            }
+        }
+
+        else if (pMod == PlayMode.BatterMode)
+        {
+            switch (layer)
+            {
+                case 11:    // homerun
+                    turnResult = TurnResult.HomeRun;
+                    break;
+                case 12:    // foul
+                    turnResult = TurnResult.Foul;
+                    break;
+                case 13:    // inner
+                    turnResult = TurnResult.Hit;
+                    break;
+
+                default:
+                    break;
+
+            }
+        }
+           
+        GameManager.Instance.RequestTurnResult(turnResult);
+
+        Destroy(gameObject);
     }
 
     public void Reflect(Vector3 direction, float force)
     {
+        rb.useGravity = true;
         Vector3 incoming = rb.linearVelocity;
         Vector3 reflectDirection = Vector3.Reflect(incoming.normalized, direction.normalized);
 

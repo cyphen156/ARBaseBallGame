@@ -150,11 +150,26 @@ public class UIManager : MonoBehaviour
     /// 턴의 결과를 시스템 UI에 적용합니다.
     /// </summary>
     /// <param name="result"></param>
-    private void ApplyTurnResult(TurnResult result)
+    public void ApplyTurnResult(TurnResult result, int count)
     {
         if (uiElements.TryGetValue("SystemUI", out GameObject systemUI))
         {
             uiElements["SystemUI"].GetComponent<SystemUI>().PlayTurnResultTextAnimation(result.ToString(), 0.1f);
+
+            uiElements["SystemUI"].GetComponent<SystemUI>().ApplyTurnResult(result.ToString(), count);
+        }
+    }
+
+    public void ApplyTurnSessionResult(TurnSessionResult result, int count)
+    {
+        if (uiElements.TryGetValue("SystemUI", out GameObject systemUI))
+        {
+            uiElements["SystemUI"].GetComponent<SystemUI>().PlayTurnResultTextAnimation(result.ToString(), 0.1f);
+        }
+
+        if (result == TurnSessionResult.Out)
+        {
+            uiElements["SystemUI"].GetComponent<SystemUI>().ApplyTurnResult(result.ToString(), count);
         }
     }
 

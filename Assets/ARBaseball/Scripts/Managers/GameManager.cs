@@ -4,6 +4,7 @@ using Unity.XR.CoreUtils;
 using UnityEditor.XR.LegacyInputHelpers;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 
@@ -49,16 +50,19 @@ public class GameManager : MonoBehaviour
     private Vector3 pitchOffset = new Vector3(-5f, -5f, 40f); 
     private Vector3 batOffset = new Vector3(10f, 0f, -40f); 
 
-
     public event Action<GameState> OnGameStateChanged;
     public event Action<PlayMode> OnPlayModeChanged;
     public event Action<int> OnRestTimeChanged;
+
     private float defaultRestTime = 30f;
     private float currentRestTime;
     private float elapsedTime = 0f;
     public float minForce = 10f;
     public float maxForce = 25f;
     private Vector3 pitchAnimationCameraPosition;
+
+    private TurnSession turnSession;
+    private bool _isInputLocked = false;
 
     private void Awake()
     {
@@ -73,6 +77,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        turnSession.OnTurnResultAccepted -= ApplyTrunResult;
+        turnSession.NoticeTurnSessionResult -= ApplyTurnSessionResult;
+    }
     private void Start()
     {
         baseballGameCreator = GetComponent<BaseballGameCreator>();
@@ -115,7 +124,8 @@ public class GameManager : MonoBehaviour
                             if (currentRestTime < 0)
                             {
                                 // 타이머가 0 이하로 내려가면 다음 턴으로 넘어갑니다.
-
+                                turnSession.AcceptTurnResult(TurnResult.Ball);
+                                currentRestTime = defaultRestTime;
                             }
                             OnRestTimeChanged?.Invoke((int)currentRestTime);
                         }
@@ -178,6 +188,10 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("게임 플레이 준비 완료. 현재 상태: " + currentGameState);
         OnGameStateChanged?.Invoke(currentGameState);
+
+        turnSession = GetComponent<TurnSession>();
+        turnSession.OnTurnResultAccepted += ApplyTrunResult;
+        turnSession.NoticeTurnSessionResult += ApplyTurnSessionResult;
     }
 
     /// <summary>
@@ -340,6 +354,11 @@ public class GameManager : MonoBehaviour
 
     public void ProcessInput(Vector2 StartPosition, Vector2 EndPosition, double elapsedDraggingTime)
     {
+        if (_isInputLocked)
+        {
+            return;
+        }
+
         if (currentGameState == GameState.Initializing)
         {
             // 스트라이크 존 생성 로직을 여기에 작성합니다.
@@ -353,6 +372,7 @@ public class GameManager : MonoBehaviour
 
         else if (currentGameState == GameState.Play)
         {
+            _isInputLocked = true;
             Vector2 drag = EndPosition - StartPosition;
             float force = Mathf.Clamp((float)elapsedDraggingTime * 10f, minForce, maxForce);
 
@@ -424,5 +444,32 @@ public class GameManager : MonoBehaviour
     public void OnBallHit()
     {
         PlayHitSequence();
+    }
+
+    private void ApplyTrunResult(TurnResult turnResult, int count)
+    {
+        UIManager.Instance.ApplyTurnResult(turnResult, count);
+        _isInputLocked = false;
+    }
+
+    private void ApplyTurnSessionResult(TurnSessionResult result, int count)
+    {
+        UIManager.Instance.ApplyTurnSessionResult(result, count);
+
+        if (result == TurnSessionResult.SessionEnd)
+        {
+            ChangeGameState(GameState.End);
+        }
+        _isInputLocked = false;
+    }
+
+    public void RequestTurnResult(TurnResult result)
+    {
+        turnSession.AcceptTurnResult(result);
+    }
+
+    public PlayMode GetPlayMode()
+    {
+        return currentPlayMode;
     }
 }

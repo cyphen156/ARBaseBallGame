@@ -81,7 +81,8 @@ public enum TurnSessionResult
     Ready,       // 타석에 진입했지만 아직 투구 시작 전
     Ongoing,     // 투구 중, 세션 진행 중
     Out,         // 삼진 등으로 타석 종료됨
-    Complete     // 히트, 홈런, 볼넷 등으로 종료됨
+    Complete,    // 히트, 홈런, 볼넷 등으로 종료됨
+    SessionEnd   // 3아웃으로 게임끝남
 }
 
 public enum Command

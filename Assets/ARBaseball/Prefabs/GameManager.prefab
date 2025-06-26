@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6968740068266064303}
   - component: {fileID: 4592383692820825399}
   - component: {fileID: 4324596815386631697}
+  - component: {fileID: -6430697390835877474}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -57,7 +58,12 @@ MonoBehaviour:
   playerGameObject: {fileID: 0}
   aIGameObject: {fileID: 0}
   bat: {fileID: 0}
-  cameraOffset: {x: 2.5, y: 2.5, z: -15}
+  baseballField: {fileID: 0}
+  targetTransform: {fileID: 0}
+  cameraTransform: {fileID: 0}
+  pitcherPosition: {fileID: 0}
+  batterPosition: {fileID: 0}
+  defaultPitcherPosition: {x: 0, y: 0, z: 0}
   minForce: 10
   maxForce: 25
 --- !u!114 &4324596815386631697
@@ -78,3 +84,18 @@ MonoBehaviour:
   _arPlaneManager: {fileID: 0}
   _xrOrigin: {fileID: 0}
   isCreated: 0
+--- !u!114 &-6430697390835877474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6763837534451679666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 877fbd29da605f74e9296f5220aa945e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ballCount: 0
+  strikeCount: 0
+  outCount: 0
