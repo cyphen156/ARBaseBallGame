@@ -53,9 +53,11 @@ public class TurnSession : MonoBehaviour
                 {
                     if (strikeCount >= 2)
                     {
+                        OnTurnResultAccepted?.Invoke(turnResult, strikeCount);
                         break;
                     }
                     strikeCount++;
+                    turnResult = TurnResult.Strike; // Treat foul as a strike
                     OnTurnResultAccepted?.Invoke(turnResult, strikeCount);
                     break;
                 }

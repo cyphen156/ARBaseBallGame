@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/ARBaseball/Test/TestScene.unity
-    guid: 2e822a3140eaf0c4abe99f6118ad91a2
+    path: Assets/ARBaseball/Scenes/MainScene.unity
+    guid: 7df0df3b9af629040a2ba431fcf434a6
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: c72f1e1a7089a1747964dc28d258c4ad,
       type: 2}

@@ -24,7 +24,6 @@ public class StrikeZonePanel : MonoBehaviour
         //if (other.TryGetComponent<BallController>(out BallController ball))
         {
             GameObject indicatorObj = Instantiate(ballIndicatorUI);
-            indicatorObj.transform.SetParent(_canvas.transform, false);
             indicatorObj.transform.position = _collider.ClosestPoint(other.transform.position);
         }
     }

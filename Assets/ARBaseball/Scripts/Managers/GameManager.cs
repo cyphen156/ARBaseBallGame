@@ -8,6 +8,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 
+using Random = UnityEngine.Random;
 /// <summary>
 /// 게임의 전반적인 상태를 관리합니다.
 /// 사용자의 입력에 따라 게임의 진행 상태를 업데이트하고, 게임 오브젝트를 관리합니다.
@@ -44,11 +45,12 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Transform pitcherPosition;
     [SerializeField] private Transform batterPosition;
+    [SerializeField] private Transform StrikeZone; 
     [SerializeField] private Vector3 defaultPitcherPosition;
 
     private Vector3 cameraOffset;
-    private Vector3 pitchOffset = new Vector3(-5f, -5f, 40f); 
-    private Vector3 batOffset = new Vector3(10f, 0f, -40f); 
+    private Vector3 pitchOffset = new Vector3(-2f, -1f, 8f); 
+    private Vector3 batOffset = new Vector3(3f, 0f, -12f); 
 
     public event Action<GameState> OnGameStateChanged;
     public event Action<PlayMode> OnPlayModeChanged;
@@ -63,6 +65,9 @@ public class GameManager : MonoBehaviour
 
     private TurnSession turnSession;
     private bool _isInputLocked = false;
+    private bool _isAIPitching = false;
+    private float _AIPitchingTime = 3f;
+    private float _accumulatedTime = 0f;
 
     private void Awake()
     {
@@ -125,15 +130,45 @@ public class GameManager : MonoBehaviour
                             {
                                 // 타이머가 0 이하로 내려가면 다음 턴으로 넘어갑니다.
                                 turnSession.AcceptTurnResult(TurnResult.Ball);
-                                currentRestTime = defaultRestTime;
+                                ResetRestTime();
                             }
-                            OnRestTimeChanged?.Invoke((int)currentRestTime);
                         }
                     }
                     else if (currentPlayMode == PlayMode.BatterMode)
                     {
+
                         // 배터 모드에서의 게임 로직을 처리합니다.
-                        // 예: 플레이어가 공을 치는 로직을 처리합니다.
+                        // AI의 공 던지기를 결정합니다.
+                        if (!_isAIPitching)
+                        // AI가 피칭중이 아닐때
+                        {
+                            _accumulatedTime += Time.deltaTime;
+
+                            if (_AIPitchingTime < _accumulatedTime)
+                            // AI가 공을 던질 시간인지 확인합니다.
+                            {
+                                _isAIPitching = true;
+                                aIGameObject.GetComponent<AnimationContoller>().PlayAnimation("Shoot");
+
+                                Vector3 newPosition = aIGameObject.transform.position;
+                                newPosition.y = 1f; // 공이 바닥에 닿지 않도록 약간 위로 설정
+                                GameObject ball = Instantiate(ballPrefab, newPosition, aIGameObject.transform.rotation);
+
+
+                                Vector3 targetPos = StrikeZone.position + new Vector3(
+                                    Random.Range(-1f, 1.1f),
+                                    Random.Range(-1f, 1.1f),
+                                    0f
+                                );
+
+                                Vector3 direction = (targetPos - newPosition).normalized;
+                                Debug.Log($"AI가 공을 던집니다. 방향: {direction}");
+                                ball.GetComponent<Ball>().Shoot(newPosition, direction, 10f, PitchType.Fastball);
+
+                                _AIPitchingTime = Random.Range(2f, 5f); // AI가 공을 던지는 시간 간격을 랜덤으로 설정
+                                _accumulatedTime = 0f; // 누적 시간 초기화
+                            }
+                        }
                     }
                     else
                     {
@@ -173,7 +208,7 @@ public class GameManager : MonoBehaviour
         // 로직 1
         // AR을 통해 플레이어와 AI의 위치를 설정하는 로직을 여기에 작성합니다.
         yield return new WaitUntil(()=> baseballGameCreator.isCreated);
-        simulationCamera = GameObject.Find("SimulationCamera");
+        simulationCamera = Camera.main.gameObject;
 
         // 캐릭터 생성 좌표 초기화
         pitcherPosition = GameObject.Find("PitcherPosition").transform;
@@ -208,15 +243,51 @@ public class GameManager : MonoBehaviour
 
         if (currentGameState == GameState.Play)
         {
-            // 캐릭터를 생성하고
-            SpawnCharacters();
+            try
+            {
+                // 캐릭터를 생성하고
+                SpawnCharacters();
 
-            // 카메라의 현재 위치 캐싱
-            cameraTransform = simulationCamera.transform;
+            }
+            catch(Exception e)
+            {
+                Debug.LogError($"Failed to create player characeter: {e},{e.Message}, {e.StackTrace} ");
+                return; // 오류 발생 시 게임 상태 변경을 중단
+            }
 
-            baseballField = GameObject.Find("BaseballField");
+            try
+            {
+                baseballField = GameObject.Find("BaseballField");
+                if (baseballField == null)
+                {
+                    throw new NullReferenceException("BaseballField 오브젝트가 존재하지 않습니다. ARBaseballGameCreator가 올바르게 설정되었는지 확인하세요.");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Faield to get baseballfield: {e},{e.Message}, {e.StackTrace} ");
+                return; // 오류 발생 시 게임 상태 변경을 중단
+            }
 
-            targetTransform = simulationCamera.transform;
+            try
+            {
+                // 카메라의 현재 위치 캐싱
+                cameraTransform = simulationCamera.transform;
+                targetTransform = simulationCamera.transform;
+
+                if (cameraTransform == null ||targetTransform == null)
+                {
+                 throw new NullReferenceException("CAm or target transform is null입니다. ARBaseballGameCreator가 올바르게 설정되었는지 확인하세요.");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"camera pos exception: {e},{e.Message}, {e.StackTrace} ");
+                return; // 오류 발생 시 게임 상태 변경을 중단
+            }
+
+
+
             // 플레이 모드에 따라위치를 옮긴 다음 서로 마주보게 해야함
             if (currentPlayMode == PlayMode.PitcherMode)
             {
@@ -234,6 +305,8 @@ public class GameManager : MonoBehaviour
                 playerGameObject.transform.position = batterPosition.position;
                 playerGameObject.transform.rotation = batterPosition.rotation;
                 aIGameObject.transform.position = pitcherPosition.position;
+                StrikeZone = GameObject.Find("StrikeZone").transform;
+                aIGameObject.transform.LookAt(StrikeZone);
                 targetTransform = batterPosition;
                 cameraOffset = batOffset;
                 bat = GameObject.Find("Bat");
@@ -258,6 +331,7 @@ public class GameManager : MonoBehaviour
             }
 
             baseballField.transform.position = newPosition;
+            Physics.SyncTransforms();
         }
 
         Debug.Log("게임 상태가 변경되었습니다: " + currentGameState);
@@ -318,6 +392,7 @@ public class GameManager : MonoBehaviour
     private void ResetRestTime()
     {
         currentRestTime = defaultRestTime;
+        OnRestTimeChanged?.Invoke((int)currentRestTime);
     }
 
     public void TryChangeGameState(GameState state)
@@ -466,6 +541,11 @@ public class GameManager : MonoBehaviour
     public void RequestTurnResult(TurnResult result)
     {
         turnSession.AcceptTurnResult(result);
+
+        if (currentPlayMode == PlayMode.BatterMode)
+        {
+            _isAIPitching = false;
+        }
     }
 
     public PlayMode GetPlayMode()

@@ -1,5 +1,3 @@
-using Mono.Cecil.Cil;
-using System.Data.Common;
 using UnityEngine;
 
 
@@ -15,12 +13,11 @@ public class Ball : MonoBehaviour
     [Header("Pitch Settings")]
     [SerializeField] private float _lifetime = 15f;
     [SerializeField] private float _resistance = 0.1f;
-    [SerializeField] private float magnusStrength = 0.1f;
+    [SerializeField] private float magnusStrength = 0.005f;
 
     private Vector3 _startPosition;
     private Vector3 _direction;
     private float _force;
-    private float _startTime;
     private PitchType _pitchType;
     private Vector3 _defalutGravity = new Vector3(0, -9.81f * 0.3f, 0);
     private Vector3 _flippedGravity = new Vector3(0, -9.81f * -0.2f, 0);
@@ -33,7 +30,6 @@ public class Ball : MonoBehaviour
 
     private void Start()
     {
-        _startTime = Time.time;
         Destroy(gameObject, _lifetime);
     }
 
@@ -48,6 +44,7 @@ public class Ball : MonoBehaviour
 
         rb.linearVelocity = _direction * _force;
 
+        Debug.Log($"[Ball] 던짐: 시작위치 {_startPosition}, 방향 {_direction}, 힘 {_force}, 종류 {_pitchType}");
         ApplySpin(_pitchType);
     }
 
@@ -77,10 +74,10 @@ public class Ball : MonoBehaviour
                     Physics.gravity = _flippedGravity;
                 }
 
-                float forceFactor = Mathf.InverseLerp(10f, 25f, _force); 
-                float finalSpin = Mathf.Lerp(1f, 8f, forceFactor); 
+                float forceFactor = Mathf.InverseLerp(1f, 10f, _force); 
+                float finalSpin = Mathf.Lerp(1f, 2.5f, forceFactor);
 
-                rb.angularVelocity = spinAxis * directionSign * -finalSpin;
+                rb.angularVelocity = spinAxis * directionSign * -finalSpin * 0.8f;
                 break;
         }
     }
@@ -108,17 +105,16 @@ public class Ball : MonoBehaviour
     {
         TurnResult turnResult = TurnResult.Ball;
 
-        LayerMask layer = other.gameObject.layer;
+        int layer = other.gameObject.layer;
         PlayMode pMod = GameManager.Instance.GetPlayMode();
 
         if (pMod == PlayMode.PitcherMode)
         {
             if (layer == 14)
             {
-                turnResult = TurnResult.Strike;
+                turnResult = TurnResult.Strike; // 스트라이크
             }
         }
-
         else if (pMod == PlayMode.BatterMode)
         {
             switch (layer)
@@ -132,13 +128,15 @@ public class Ball : MonoBehaviour
                 case 13:    // inner
                     turnResult = TurnResult.Hit;
                     break;
-
+                case 14:    // strike
+                    turnResult = TurnResult.Strike;
+                    break;
                 default:
                     break;
-
             }
         }
-           
+            
+        Debug.Log($"[Ball] 충돌됨: {other.gameObject.name}, 결과: {turnResult}");
         GameManager.Instance.RequestTurnResult(turnResult);
 
         Destroy(gameObject);

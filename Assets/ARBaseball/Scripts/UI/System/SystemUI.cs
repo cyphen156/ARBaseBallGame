@@ -90,6 +90,12 @@ public class SystemUI : UIBehaviour, IButtonInteractable
                 index = count - 1;
                 break;
         }
+
+        if (name == "Foul")
+        {
+            return;
+        }
+
         for (int i = 0; i < targetList.Count; i++)
         {
             if (i < count)

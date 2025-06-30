@@ -251,7 +251,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 20, z: 20}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2890473396065633539}
@@ -771,8 +771,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 20, y: 10, z: 1}
-  m_Center: {x: 0, y: 4, z: 0}
+  m_Size: {x: 20, y: 20, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6873605631051973191
 GameObject:
   m_ObjectHideFlags: 0
@@ -1114,8 +1114,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 20, y: 10, z: 1}
-  m_Center: {x: 0, y: 4, z: 0}
+  m_Size: {x: 20, y: 20, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &3556682762644215605
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1134,12 +1134,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 2635112389185980015, guid: 0180ac3ae8f931c428ca2853d8cb8925,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4153341357359709091, guid: 0180ac3ae8f931c428ca2853d8cb8925,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.90000004
       objectReference: {fileID: 0}
     - target: {fileID: 6259248921964680804, guid: 0180ac3ae8f931c428ca2853d8cb8925,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7134893369066034054, guid: 0180ac3ae8f931c428ca2853d8cb8925,
         type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -1167,7 +1177,7 @@ PrefabInstance:
     - target: {fileID: 7916225522205033607, guid: 0180ac3ae8f931c428ca2853d8cb8925,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.455
+      value: 0.555
       objectReference: {fileID: 0}
     - target: {fileID: 7916225522205033607, guid: 0180ac3ae8f931c428ca2853d8cb8925,
         type: 3}
@@ -1213,6 +1223,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9144534118763663769, guid: 0180ac3ae8f931c428ca2853d8cb8925,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
