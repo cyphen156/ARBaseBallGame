@@ -39,7 +39,7 @@
 ### 시연 자료
 - **APK**: [ARBaseballGame_v1.0.0.apk](https://github.com/BIT-Unity12th-XRProjects/ARBaseBallGame/releases/download/v1.0.0/ARBaseballGame.apk)
 - **Presentation**:
-  - [hhwoyt_ARBaseBall.pdf](https://drive.google.com/file/d/17WXuQKkt16ddmN7GcnSnNGUZf2qoJlZP/view)
+  - [hhwoyt_ARBaseBall.pdf](https://drive.google.com/file/d/1huye39g7B7cDDvl4_I6FowrOCA9sWgDn/view?usp=sharing)
   -  [hhwoyt_ARBaseBall.pptx](https://docs.google.com/presentation/d/1VJ9vba_Eq3rNBf-zrp2sZzxHUjuZts4d/edit?slide=id.p1#slide=id.p1)
 
 ### Contact Us  
