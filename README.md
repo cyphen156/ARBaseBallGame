@@ -37,7 +37,7 @@
 3. **투수/타자 모드** 플레이
 
 ### 시연 자료
-- **APK**: [ARBaseballGame_v1.0.0.apk](https://github.com/cyphen156/ARBaseBallGame/releases/download/v1.0.0/ARBaseballGame_v1.0.0.apk)
+- **APK**: [ARBaseballGame_v1.0.0.apk](https://github.com/BIT-Unity12th-XRProjects/ARBaseBallGame/releases/tag/v1.0.0)
 - **Presentation**:
   - [hhwoyt_ARBaseBall.pdf](https://drive.google.com/file/d/17WXuQKkt16ddmN7GcnSnNGUZf2qoJlZP/view)
   -  [hhwoyt_ARBaseBall.pptx](https://docs.google.com/presentation/d/1VJ9vba_Eq3rNBf-zrp2sZzxHUjuZts4d/edit?slide=id.p1#slide=id.p1)
