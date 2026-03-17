@@ -40,7 +40,7 @@
 - **APK**: [ARBaseballGame_v1.0.0.apk](https://github.com/BIT-Unity12th-XRProjects/ARBaseBallGame/releases/download/v1.0.0/ARBaseballGame.apk)
 - **Presentation**:
   - [hhwoyt_ARBaseBall.pdf](https://drive.google.com/file/d/1huye39g7B7cDDvl4_I6FowrOCA9sWgDn/view?usp=sharing)
-  -  [hhwoyt_ARBaseBall.pptx](https://drive.google.com/file/d/1QWqUNlaJ0y9rYH-Q9IyZ9iZucL9BuxRG/view?usp=sharing)
+  -  [hhwoyt_ARBaseBall.pptx](https://www.canva.com/design/DAGrVfGJe80/1tXbtfsJw9LTu5JcKiMT9g/edit?utm_content=DAGrVfGJe80&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ### Contact Us  
 황해원: [hhw3287@gmail.com](mailto:hhw3287@gmail.com) / 010-9149-3287/ [GitHub](https://github.com/now2ah)  
