@@ -23,6 +23,19 @@
 - **물리·판정**: **마그누스 효과(커브)**, **반사**
 - **UI 반영**: **모드별 HUD**, **스트라이크 존**, **타이머/카운트/스코어** 실시간 갱신
 
+## 플레이 시연
+
+### AR 경기장 배치
+![world batching](./docs/gifs/world_batching.gif)
+
+### 투구 (Fastball)
+![fastball](./docs/gifs/fastball.gif)
+
+### 투구 (Curve)
+![curve](./docs/gifs/curve.gif)
+
+### 타격 (Swing)
+![swing](./docs/gifs/swing.gif)
 
 ## 기술 스택
 - **엔진**: Unity 6 (6.0.34f1)  
