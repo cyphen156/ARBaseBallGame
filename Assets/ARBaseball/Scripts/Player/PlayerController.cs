@@ -16,31 +16,53 @@ public class PlayerController : MonoBehaviour
     private Vector2 _touchStartPosition;
     private Vector2 _touchEndPosition;
 
+    [SerializeField] private RectTransform _line;
+    [SerializeField] private Canvas _canvas;
+
 #if UNITY_EDITOR
     private void Update()
     {
-        if (Mouse.current == null)
+        if (_isDragging == false)
+        {
             return;
-
-        // 마우스 버튼 눌림
-        if (Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            _isDragging = true;
-            _touchStartPosition = Mouse.current.position.ReadValue();
-            _beginDragTimeMark = Time.timeAsDouble;
         }
 
-        // 마우스 버튼 뗌
-        if (_isDragging && Mouse.current.leftButton.wasReleasedThisFrame)
-        {
-            _isDragging = false;
-            _touchEndPosition = Mouse.current.position.ReadValue();
-
-            double elapsedDraggingTime = Time.timeAsDouble - _beginDragTimeMark;
-
-            GameManager.Instance.ProcessInput(_touchStartPosition, _touchEndPosition, elapsedDraggingTime);
-        }
+        float time = (float)(Time.timeAsDouble - _beginDragTimeMark);
+        UpdateDragLine(_touchStartPosition, _touchEndPosition, time);
     }
+    //private void Update()
+    //{
+    //    if (Mouse.current == null)
+    //        return;
+
+    //    // 마우스 버튼 눌림
+    //    if (Mouse.current.leftButton.wasPressedThisFrame)
+    //    {
+    //        _isDragging = true;
+    //        _touchStartPosition = Mouse.current.position.ReadValue();
+    //        _beginDragTimeMark = Time.timeAsDouble;
+    //    }
+
+    //    if (_isDragging)
+    //    {
+    //        _touchEndPosition = Mouse.current.position.ReadValue();
+
+    //        float time = (float)(Time.timeAsDouble - _beginDragTimeMark);
+    //        UpdateDragLine(_touchStartPosition, _touchEndPosition, time);
+    //    }
+
+    //    // 마우스 버튼 뗌
+    //    if (_isDragging && Mouse.current.leftButton.wasReleasedThisFrame)
+    //    {
+    //        _isDragging = false;
+    //        _touchEndPosition = Mouse.current.position.ReadValue();
+
+    //        double elapsedDraggingTime = Time.timeAsDouble - _beginDragTimeMark;
+
+    //        GameManager.Instance.ProcessInput(_touchStartPosition, _touchEndPosition, elapsedDraggingTime);
+    //        HideDragLine();
+    //    }
+    //}
 #endif
 
     private void OnEnable()
@@ -91,6 +113,60 @@ public class PlayerController : MonoBehaviour
 
                 GameManager.Instance.ProcessInput(_touchStartPosition, _touchEndPosition, elapsedDraggingTime);
             }
+
+            HideDragLine();
+        }
+    }
+    private void UpdateDragLine(Vector2 start, Vector2 end, float time)
+    {
+        if (_line == null || _canvas == null)
+        {
+            return;
+        }
+
+        Vector2 dir = end - start;
+        float length = dir.magnitude;
+
+        // 위치 (중간점)
+        Vector2 center = start + dir * 0.5f;
+
+        // UI 좌표로 변환
+        RectTransform canvasRect = _canvas.transform as RectTransform;
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            center,
+            _canvas.worldCamera,
+            out localPoint
+        );
+
+        _line.anchoredPosition = localPoint;
+
+        // 길이
+        _line.sizeDelta = new Vector2(length, 5f);
+
+        // 회전
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        _line.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        // 색 (시간 기반)
+        float t = Mathf.Clamp01(time);
+        Color color = new Color(t, 1f - t, 0f, 1f);
+
+        UnityEngine.UI.Image img = _line.GetComponent<UnityEngine.UI.Image>();
+        if (img != null)
+        {
+            img.color = color;
+        }
+
+        _line.gameObject.SetActive(true);
+    }
+
+    private void HideDragLine()
+    {
+        if (_line != null)
+        {
+            _line.gameObject.SetActive(false);
         }
     }
 }

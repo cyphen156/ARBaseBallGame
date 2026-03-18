@@ -479,6 +479,9 @@ public class GameManager : MonoBehaviour
                 playerGameObject.GetComponent<AnimationContoller>().PlayAnimation("Swing");
                 Debug.Log("πË∆Æ∏¶ »÷µ—∑µ¥Ÿ!");
             }
+
+            // Debug_Value
+            Debug.Log($"force : {force}");
         }
     }
 
