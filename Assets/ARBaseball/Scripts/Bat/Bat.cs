@@ -8,7 +8,7 @@
 /// </summary>
 public class Bat : MonoBehaviour
 {
-    public Collider[] batColliders; // 혹시 몰라서 인스펙터 열었음
+    public Collider[] batColliders;
 
     private Vector3 _direction = Vector3.forward;
     private float _force = 10f;
@@ -18,7 +18,7 @@ public class Bat : MonoBehaviour
 
     private void Awake()
     {
-        batColliders = GetComponentsInChildren<Collider>(); // 캡슐 콜라이더 전부 가져옴
+        batColliders = GetComponentsInChildren<Collider>();
         _defaultLocalRotation = transform.localRotation;
     }
 
@@ -29,7 +29,6 @@ public class Bat : MonoBehaviour
             _acceleration += Time.deltaTime;
         }
 
-        // 혹시 모르는 함수 호출 에러를 방지하는 초기화 함수
         if (_acceleration > 2f)
         {
             ResetBat();
