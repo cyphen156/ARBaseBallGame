@@ -61,7 +61,8 @@ GameState를 기준으로 해석을 분기하기 때문에 입력 종류가 늘�
 
 | 비교 항목 | 기준 | 비교 |
 |:---:|:---:|:---:|
-| **드래그 길이 비교** (종횡비에 의한 정규화) | ![짧은 드래그](./docs/gifs/fast_02_s.gif) | ![기본](./docs/gifs/fast_01.gif) |
+| **해상도 차이 보정** | ![FHD](./docs/gifs/fhd.gif) | ![기본](./docs/gifs/fhd_portable.gif) |
+| **드래그 길이 정규화** | ![짧은 드래그](./docs/gifs/fast_02_s.gif) | ![기본](./docs/gifs/fast_01.gif) |
 | **시작 포지션 비교** (비율에 의한 벡터 산출) | ![짧은 드래그](./docs/gifs/fast_02_s.gif) | ![다른 시작점](./docs/gifs/fast_03_s_diffpos.gif) |
 | **입력 시간 비교** (가속도 변환) | ![기본](./docs/gifs/fast_01.gif) | ![긴 입력 시간](./docs/gifs/fast_04_long.gif) |
 
