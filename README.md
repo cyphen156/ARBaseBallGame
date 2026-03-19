@@ -82,30 +82,60 @@ GameState를 기준으로 해석을 분기하기 때문에 입력 종류가 늘�
 ---
 
 ### 마그누스 효과 적용
-AR 월드 스케일은 실제 물리 스케일보다 훨씬 작기 때문에, Unity Physics 기본 중력(9.81)을 그대로 적용하면 공이 순식간에 바닥으로 떨어집니다. 
-중력값을 0.3g로 줄여 공이 적당히 날아가도록 보정했고, 아래 방향 커브의 경우 중력을 역방향(-0.2g)으로 적용해 위로 꺾이는 궤적을 구현했습니다.
+AR 월드 스케일은 실제 물리 스케일보다 훨씬 작기 때문에, Unity Physics 기본 중력을 그대로 적용하면 공이 순식간에 바닥으로 떨어집니다. 
+중력값을 줄여 공이 적당히 날아가도록 보정했고, 아래 방향 커브의 경우 중력을 역방향으로 적용해 위로 꺾이는 궤적을 구현했습니다.
 마그누스 힘도 동일한 이유로 수식 그대로 적용하면 공의 이동 시간이 짧아 궤적 변화가 유저에게 직구처럼 인지됩니다. 
 시각적 피드백을 최우선으로 magnusStrength를 강제로 스케일업해 게임적 허용을 제공하여 커브 궤적이 명확히 구분되도록 하여 유저 경험을 극대화 하였습니다.
 
 ![커브 4방향 비교](./docs/gifs/curve_comb.gif)
 
-```
+```csharp
+// Ball.cs — 투구 방향 기반 스핀 축 결정 + 중력 역보정
+private void ApplySpin(PitchType type)
+{
+    switch (type)
+    {
+        case PitchType.Fastball:
+            rb.angularVelocity = transform.right * -30f; // Backspin
+            rb.useGravity = false;
+            break;
+        case PitchType.Curve:
+            Vector3 cross = Vector3.Cross(transform.forward, _direction);
+            float side = Vector3.Dot(cross, Vector3.up);        // 좌/우 판별
+            float directionSign = Mathf.Sign(side);             // +1 Curve Left / -1 Curve Right
+            float verticalFlip = Mathf.Sign(_direction.y);
+            Vector3 spinAxis = transform.up;
+ 
+            if (verticalFlip < 0)                               // 아래로 던질 때 스핀 축 플립 + 중력 역보정
+            {
+                spinAxis = Vector3.Reflect(spinAxis, transform.right);
+                Physics.gravity = _flippedGravity;
+            }
+ 
+            float forceFactor = Mathf.InverseLerp(1f, 10f, _force);
+            float finalSpin = Mathf.Lerp(1f, 2.5f, forceFactor); // 투구 힘에 비례한 스핀 세기
+ 
+            rb.angularVelocity = spinAxis * directionSign * -finalSpin * 0.8f;
+            break;
+    }
+}
+ 
+// Ball.cs — 마그누스 힘 + 공기 저항 수동 적용
 private void FixedUpdate()
 {
     if (_pitchType == PitchType.Curve)
     {
         Vector3 w = rb.angularVelocity;
         Vector3 v = rb.linearVelocity;
-
+ 
         if (w != Vector3.zero && v != Vector3.zero)
         {
             Vector3 magnusForce = Vector3.Cross(w, v).normalized * magnusStrength;
             rb.AddForce(magnusForce, ForceMode.Acceleration);
         }
     }
-
-    rb.linearVelocity *= (1f - _resistance * Time.fixedDeltaTime);
-    Debug.DrawRay(transform.position, rb.linearVelocity, Color.green, 0.1f);
+ 
+    rb.linearVelocity *= (1f - _resistance * Time.fixedDeltaTime); // 공기 저항 수동 적용
 }
 ```
 
