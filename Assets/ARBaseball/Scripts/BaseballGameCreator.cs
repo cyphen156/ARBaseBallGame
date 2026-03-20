@@ -50,4 +50,31 @@ public class BaseballGameCreator : MonoBehaviour
             _arPlaneManager.enabled = false;
         }
     }
+    public void GenerateBaseballGameFixed()
+    {
+        if (isCreated)
+        {
+            return;
+        }
+
+        Transform cameraTransform = _xrOrigin.Camera.transform;
+
+        Vector3 flatForward = cameraTransform.forward;
+        flatForward.y = 0f;
+        flatForward.Normalize();
+
+        Vector3 spawnPosition = cameraTransform.position + flatForward * 2.5f;
+        spawnPosition.y = cameraTransform.position.y - 1.2f;
+
+        GameObject baseballGameObject = Instantiate(baseballGamePrefab, spawnPosition, Quaternion.identity);
+        baseballGameObject.name = "BaseballField";
+
+        Vector3 direction = baseballGameObject.transform.position - cameraTransform.position;
+        baseballGameObject.transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0f, direction.z));
+
+        isCreated = true;
+
+        _arPlaneManager.SetTrackablesActive(false);
+        _arPlaneManager.enabled = false;
+    }
 }
