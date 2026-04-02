@@ -117,7 +117,7 @@ public class PlayerController : MonoBehaviour
             HideDragLine();
         }
     }
-    private void UpdateDragLine(Vector2 start, Vector2 end, float time)
+    public void UpdateDragLine(Vector2 start, Vector2 end, float time)
     {
         if (_line == null || _canvas == null)
         {
@@ -162,7 +162,7 @@ public class PlayerController : MonoBehaviour
         _line.gameObject.SetActive(true);
     }
 
-    private void HideDragLine()
+    public void HideDragLine()
     {
         if (_line != null)
         {

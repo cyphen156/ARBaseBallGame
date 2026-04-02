@@ -332,10 +332,95 @@ public class GameManager : MonoBehaviour
 
             baseballField.transform.position = newPosition;
             Physics.SyncTransforms();
+
+            if (currentPlayMode == PlayMode.PitcherMode)
+            {
+                StartCoroutine(C_PlayAutoPitchSequence());
+            }
         }
 
         Debug.Log("게임 상태가 변경되었습니다: " + currentGameState);
         OnGameStateChanged?.Invoke(currentGameState);
+    }
+
+    private IEnumerator C_PlayAutoPitchSequence()
+    {
+        PlayerController playerController = FindFirstObjectByType<PlayerController>();
+
+        Vector2 start = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        Vector3 spawnPosition = cameraTransform.position + cameraTransform.forward * 0.5f;
+        Vector3 baseDirection = cameraTransform.forward;
+        float screenRatio = (float)Screen.height / Screen.width;
+
+        // =========================
+        // 1. 중앙에서 위로 30%
+        // 실측 force 14.61622 -> 시간 1.461622초
+        // =========================
+        {
+            Vector2 end = new Vector2(Screen.width * 0.5f, Screen.height * 0.8f);
+            Vector2 drag = end - start;
+            double elapsedDraggingTime = 1.461622;
+            float force = Mathf.Clamp((float)elapsedDraggingTime * 10f, minForce, maxForce);
+
+            if (playerController != null)
+            {
+                playerController.UpdateDragLine(start, end, (float)elapsedDraggingTime);
+            }
+
+            yield return new WaitForSeconds(0.5f);
+
+            float horizontalOffset = Mathf.Clamp(drag.x / Screen.width, -0.3f, 0.3f);
+            float verticalOffset = Mathf.Clamp((drag.y / Screen.height) * screenRatio, -0.3f, 0.3f);
+
+            Vector3 direction = (
+                baseDirection
+                + cameraTransform.right * horizontalOffset
+                + cameraTransform.up * verticalOffset
+            ).normalized;
+
+            yield return StartCoroutine(C_Shoot(spawnPosition, direction, force));
+
+            if (playerController != null)
+            {
+                playerController.HideDragLine();
+            }
+
+            yield return new WaitForSeconds(4f);
+        }
+
+        // =========================
+        // 2. 중앙에서 우로 30%
+        // 실측 force 10.05304 -> 시간 1.005304초
+        // =========================
+        {
+            Vector2 end = new Vector2(Screen.width * 0.8f, Screen.height * 0.5f);
+            Vector2 drag = end - start;
+            double elapsedDraggingTime = 1.005304;
+            float force = Mathf.Clamp((float)elapsedDraggingTime * 10f, minForce, maxForce);
+
+            if (playerController != null)
+            {
+                playerController.UpdateDragLine(start, end, (float)elapsedDraggingTime);
+            }
+
+            yield return new WaitForSeconds(0.5f);
+
+            float horizontalOffset = Mathf.Clamp(drag.x / Screen.width, -0.3f, 0.3f);
+            float verticalOffset = Mathf.Clamp((drag.y / Screen.height) * screenRatio, -0.3f, 0.3f);
+
+            Vector3 direction = (
+                baseDirection
+                + cameraTransform.right * horizontalOffset
+                + cameraTransform.up * verticalOffset
+            ).normalized;
+
+            yield return StartCoroutine(C_Shoot(spawnPosition, direction, force));
+
+            if (playerController != null)
+            {
+                playerController.HideDragLine();
+            }
+        }
     }
 
     /// <summary>
@@ -441,8 +526,9 @@ public class GameManager : MonoBehaviour
             {
                 return;
             }
+            baseballGameCreator.GenerateBaseballGameFixed();
 
-            baseballGameCreator.GenerateBaseballGame(EndPosition);
+            //baseballGameCreator.GenerateBaseballGame(EndPosition);
         }
 
         else if (currentGameState == GameState.Play)
