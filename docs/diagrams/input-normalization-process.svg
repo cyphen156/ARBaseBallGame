@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1400" width="1200" height="1400" font-family="'Malgun Gothic','Apple SD Gothic Neo',sans-serif">
+  <rect width="1200" height="1400" fill="#f4f7fb"/>
+
+  <defs>
+    <marker id="gray-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#667085"/>
+    </marker>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#1677ff"/>
+    </marker>
+    <marker id="red-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#f05a1a"/>
+    </marker>
+  </defs>
+
+  <!-- 1. 입력 -->
+  <text x="260" y="38" text-anchor="middle" font-size="17" font-weight="700" fill="#202631">FHD · 16:9</text>
+  <rect x="55" y="55" width="410" height="230" rx="20" fill="#ffffff" stroke="#252b33" stroke-width="13"/>
+  <line x1="141" y1="193" x2="299" y2="85" stroke="#1677ff" stroke-width="8" stroke-linecap="round" marker-end="url(#blue-arrow)"/>
+  <circle cx="141" cy="193" r="9" fill="#ffffff" stroke="#1677ff" stroke-width="4"/>
+  <text x="141" y="217" text-anchor="middle" font-size="12" fill="#667085">(0.2, 0.4)</text>
+  <text x="305" y="80" font-size="12" fill="#1677ff">(0.6, 0.9)</text>
+
+  <text x="850" y="38" text-anchor="middle" font-size="17" font-weight="700" fill="#202631">PortableFHD · 9:16</text>
+  <rect x="784" y="55" width="132" height="230" rx="20" fill="#ffffff" stroke="#252b33" stroke-width="12"/>
+  <line x1="850" y1="256" x2="898" y2="147" stroke="#1677ff" stroke-width="8" stroke-linecap="round" marker-end="url(#blue-arrow)"/>
+  <circle cx="850" cy="256" r="9" fill="#ffffff" stroke="#1677ff" stroke-width="4"/>
+  <text x="850" y="279" text-anchor="middle" font-size="12" fill="#667085">(0.5, 0.1)</text>
+  <text x="900" y="140" text-anchor="end" font-size="12" fill="#1677ff">(0.9, 0.6)</text>
+
+  <!-- 입력 시간 분기 -->
+  <circle cx="465" cy="252" r="5" fill="#f05a1a"/>
+  <path d="M465 252 H520 V1165" stroke="#f05a1a" stroke-width="3" fill="none" marker-end="url(#red-arrow)"/>
+  <text x="533" y="330" font-size="13" font-weight="700" fill="#f05a1a">입력 시간</text>
+  <text x="533" y="352" font-size="12" fill="#f05a1a">0.5초</text>
+
+  <circle cx="916" cy="252" r="5" fill="#f05a1a"/>
+  <path d="M916 252 H1108 V1165" stroke="#f05a1a" stroke-width="3" fill="none" marker-end="url(#red-arrow)"/>
+  <text x="1120" y="330" font-size="13" font-weight="700" fill="#f05a1a">입력 시간</text>
+  <text x="1120" y="352" font-size="12" fill="#f05a1a">3.0초</text>
+
+  <path d="M260 292 V326" stroke="#1677ff" stroke-width="2.5" fill="none" marker-end="url(#blue-arrow)"/>
+  <path d="M850 292 V326" stroke="#1677ff" stroke-width="2.5" fill="none" marker-end="url(#blue-arrow)"/>
+
+  <!-- 2. 해상도 보정 -->
+  <rect x="55" y="336" width="410" height="104" rx="15" fill="#ffffff" stroke="#1677ff" stroke-width="2"/>
+  <text x="260" y="373" text-anchor="middle" font-size="16" font-weight="700" fill="#1677ff">해상도 보정</text>
+  <text x="260" y="402" text-anchor="middle" font-size="13" fill="#667085">drag.x ÷ width · drag.y ÷ height</text>
+  <text x="260" y="425" text-anchor="middle" font-size="13" font-weight="700" fill="#1677ff">Δ(0.4, 0.5)</text>
+
+  <rect x="645" y="336" width="410" height="104" rx="15" fill="#ffffff" stroke="#1677ff" stroke-width="2"/>
+  <text x="850" y="373" text-anchor="middle" font-size="16" font-weight="700" fill="#1677ff">해상도 보정</text>
+  <text x="850" y="402" text-anchor="middle" font-size="13" fill="#667085">drag.x ÷ width · drag.y ÷ height</text>
+  <text x="850" y="425" text-anchor="middle" font-size="13" font-weight="700" fill="#1677ff">Δ(0.4, 0.5)</text>
+
+  <path d="M260 440 V478" stroke="#1677ff" stroke-width="2.5" fill="none" marker-end="url(#blue-arrow)"/>
+  <path d="M850 440 V478" stroke="#1677ff" stroke-width="2.5" fill="none" marker-end="url(#blue-arrow)"/>
+
+  <!-- 3. 중간 기울기 -->
+  <text x="260" y="510" text-anchor="middle" font-size="15" font-weight="700" fill="#202631">화면 비율이 남은 중간 벡터</text>
+  <rect x="105" y="530" width="310" height="174" rx="14" fill="#ffffff" stroke="#8aaef5" stroke-width="2"/>
+  <line x1="150" y1="664" x2="365" y2="664" stroke="#d1d9e6" stroke-width="1.8"/>
+  <line x1="150" y1="664" x2="150" y2="558" stroke="#d1d9e6" stroke-width="1.8"/>
+  <line x1="150" y1="664" x2="327" y2="566" stroke="#1677ff" stroke-width="7" stroke-linecap="round" marker-end="url(#blue-arrow)"/>
+  <circle cx="150" cy="664" r="7" fill="#ffffff" stroke="#1677ff" stroke-width="3"/>
+  <text x="260" y="692" text-anchor="middle" font-size="13" fill="#667085">완만한 기울기</text>
+
+  <text x="850" y="510" text-anchor="middle" font-size="15" font-weight="700" fill="#202631">화면 비율이 남은 중간 벡터</text>
+  <rect x="759" y="530" width="182" height="224" rx="14" fill="#ffffff" stroke="#8aaef5" stroke-width="2"/>
+  <line x1="796" y1="712" x2="916" y2="712" stroke="#d1d9e6" stroke-width="1.8"/>
+  <line x1="796" y1="712" x2="796" y2="568" stroke="#d1d9e6" stroke-width="1.8"/>
+  <line x1="796" y1="712" x2="899" y2="580" stroke="#1677ff" stroke-width="7" stroke-linecap="round" marker-end="url(#blue-arrow)"/>
+  <circle cx="796" cy="712" r="7" fill="#ffffff" stroke="#1677ff" stroke-width="3"/>
+  <text x="850" y="742" text-anchor="middle" font-size="13" fill="#667085">가파른 기울기</text>
+
+  <path d="M260 729 V767" stroke="#1677ff" stroke-width="2.5" fill="none" marker-end="url(#blue-arrow)"/>
+  <path d="M850 754 V767" stroke="#1677ff" stroke-width="2.5" fill="none" marker-end="url(#blue-arrow)"/>
+
+  <!-- 4. 종횡비 보정 -->
+  <rect x="55" y="777" width="410" height="100" rx="15" fill="#e8f1ff" stroke="#1677ff" stroke-width="2"/>
+  <text x="260" y="814" text-anchor="middle" font-size="16" font-weight="700" fill="#1677ff">종횡비 보정</text>
+  <text x="260" y="843" text-anchor="middle" font-size="13" fill="#667085">가로·세로 축을 동일한 기준으로 통일</text>
+
+  <rect x="645" y="777" width="410" height="100" rx="15" fill="#e8f1ff" stroke="#1677ff" stroke-width="2"/>
+  <text x="850" y="814" text-anchor="middle" font-size="16" font-weight="700" fill="#1677ff">종횡비 보정</text>
+  <text x="850" y="843" text-anchor="middle" font-size="13" fill="#667085">가로·세로 축을 동일한 기준으로 통일</text>
+
+  <path d="M260 877 V915" stroke="#1677ff" stroke-width="2.5" fill="none" marker-end="url(#blue-arrow)"/>
+  <path d="M850 877 V915" stroke="#1677ff" stroke-width="2.5" fill="none" marker-end="url(#blue-arrow)"/>
+
+  <!-- 5. 같은 기울기 산출 -->
+  <rect x="135" y="925" width="250" height="250" rx="16" fill="#ffffff" stroke="#1677ff" stroke-width="2.4"/>
+  <line x1="175" y1="1128" x2="345" y2="1128" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="175" y1="1128" x2="175" y2="958" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="175" y1="1128" x2="319" y2="984" stroke="#1677ff" stroke-width="7" stroke-linecap="round" marker-end="url(#blue-arrow)"/>
+  <circle cx="175" cy="1128" r="7" fill="#ffffff" stroke="#1677ff" stroke-width="3"/>
+  <text x="260" y="1161" text-anchor="middle" font-size="14" font-weight="700" fill="#1677ff">동일한 direction</text>
+
+  <rect x="725" y="925" width="250" height="250" rx="16" fill="#ffffff" stroke="#1677ff" stroke-width="2.4"/>
+  <line x1="765" y1="1128" x2="935" y2="1128" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="765" y1="1128" x2="765" y2="958" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="765" y1="1128" x2="909" y2="984" stroke="#1677ff" stroke-width="7" stroke-linecap="round" marker-end="url(#blue-arrow)"/>
+  <circle cx="765" cy="1128" r="7" fill="#ffffff" stroke="#1677ff" stroke-width="3"/>
+  <text x="850" y="1161" text-anchor="middle" font-size="14" font-weight="700" fill="#1677ff">동일한 direction</text>
+
+  <!-- 시간 흐름의 결과 -->
+  <rect x="448" y="1180" width="144" height="92" rx="14" fill="#fff3eb" stroke="#f05a1a" stroke-width="2"/>
+  <text x="520" y="1212" text-anchor="middle" font-size="14" font-weight="700" fill="#f05a1a">force</text>
+  <text x="520" y="1240" text-anchor="middle" font-size="13" fill="#667085">0.5초 × 10</text>
+  <text x="520" y="1262" text-anchor="middle" font-size="16" font-weight="700" fill="#f05a1a">5</text>
+
+  <rect x="1036" y="1180" width="144" height="92" rx="14" fill="#fff3eb" stroke="#f05a1a" stroke-width="2"/>
+  <text x="1108" y="1212" text-anchor="middle" font-size="14" font-weight="700" fill="#f05a1a">force</text>
+  <text x="1108" y="1240" text-anchor="middle" font-size="13" fill="#667085">3.0초 × 10</text>
+  <text x="1108" y="1262" text-anchor="middle" font-size="16" font-weight="700" fill="#f05a1a">30</text>
+
+  <!-- 최종 합성 -->
+  <path d="M260 1175 V1300" stroke="#667085" stroke-width="2.4" fill="none" marker-end="url(#gray-arrow)"/>
+  <path d="M850 1175 V1300" stroke="#667085" stroke-width="2.4" fill="none" marker-end="url(#gray-arrow)"/>
+  <rect x="55" y="1310" width="410" height="66" rx="14" fill="#ffffff" stroke="#667085" stroke-width="1.8"/>
+  <text x="260" y="1350" text-anchor="middle" font-size="15" fill="#202631"><tspan fill="#1677ff" font-weight="700">direction</tspan> + <tspan fill="#f05a1a" font-weight="700">force 5</tspan></text>
+  <rect x="645" y="1310" width="410" height="66" rx="14" fill="#ffffff" stroke="#667085" stroke-width="1.8"/>
+  <text x="850" y="1350" text-anchor="middle" font-size="15" fill="#202631"><tspan fill="#1677ff" font-weight="700">direction</tspan> + <tspan fill="#f05a1a" font-weight="700">force 30</tspan></text>
+</svg>
